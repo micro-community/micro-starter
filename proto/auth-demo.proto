@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package authdemo;
+
+service AuthDemo{
+	rpc Call(Request) returns (Response) {}
+	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
+	rpc PingPong(stream Ping) returns (stream Pong) {}
+
+	//	User
+	rpc GetUser(GetUserArgs) returns (UserInfo) {}
+	rpc InsertUser(InsertUserArgs) returns (InsertUserResp) {}
+	rpc DeleteUser(DeleteUserArgs) returns (DeleteUserResp) {}
+	rpc UpdateUser(UpdateUserArgs) returns (UserInfo) {}
+
+	//  Role
+	rpc GetRole(GetRoleArgs) returns (GetRoleResp) {}
+	rpc InsertRole(InsertRoleArgs) returns (InsertRoleResp) {}
+	rpc DeleteRole(DeleteRoleArgs) returns (DeleteRoleResp) {}
+	rpc UpdateRole(UpdateRoleArgs) returns (UpdateRoleResp) {}
+}
+
+message Message {
+	string say = 1;
+}
+
+message Request {
+	string name = 1;
+}
+
+message Response {
+	string msg = 1;
+}
+
+message StreamingRequest {
+	int64 count = 1;
+}
+
+message StreamingResponse {
+	int64 count = 1;
+}
+
+message Ping {
+	int64 stroke = 1;
+}
+
+message Pong {
+	int64 stroke = 1;
+}
+
+
+message GetUserArgs {
+	int64 user_id = 1;
+}
+
+message GetUserResp {
+	repeated int64 Roles = 1;
+}
+
+message InsertUserArgs {
+	int64 user_id = 1;
+}
+
+message InsertUserResp {
+	int64 user_id = 1;
+}
+
+message DeleteUserArgs {
+	int64 user_id = 1;
+}
+
+message DeleteUserResp {
+}
+
+message UpdateUserArgs {
+	int64 user_id = 1;
+}
+
+message UserInfo {
+	string name = 1;
+}
+
+message GetRoleArgs{
+	int64 role_id = 1;
+}
+
+message GetRoleResp {
+}
+
+message InsertRoleArgs {
+}
+
+message InsertRoleResp {
+}
+
+message DeleteRoleArgs {
+	int64 role_id = 1;
+}
+
+message DeleteRoleResp {
+}
+
+message UpdateRoleArgs {
+	int64 role_id = 1;
+}
+
+message UpdateRoleResp {
+}

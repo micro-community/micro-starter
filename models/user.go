@@ -1,10 +1,11 @@
 package models
 
 import (
-	"auth-demo/lib/database/global"
-	authdemo "auth-demo/proto"
 	"errors"
 	"time"
+
+	"github.com/crazybber/user/lib/database/global"
+	user "github.com/crazybber/user/proto"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -158,8 +159,8 @@ func (u *UserModel) BatchDelete(id []int) (Result bool, err error) {
 	return
 }
 
-func (u *UserModel) ToView() *authdemo.UserInfo {
-	var v authdemo.UserInfo
+func (u *UserModel) ToView() *user.UserInfo {
+	var v user.UserInfo
 	v.Name = u.NickName
 	//.....
 

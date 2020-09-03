@@ -1,10 +1,12 @@
 package models
 
 import (
-	"auth-demo/lib/database/global"
 	"errors"
+
+	"github.com/crazybber/user/lib/database/global"
 )
 
+//RoleModel of system
 type RoleModel struct {
 	RoleId   int    `json:"roleId" gorm:"primary_key;AUTO_INCREMENT"` // 角色编码
 	RoleKey  string `json:"roleKey" gorm:"size:128;"`                 //角色代码
@@ -52,7 +54,7 @@ func (role *RoleModel) Insert() (id int, err error) {
 	return
 }
 
-//修改
+//Update 修改
 func (role *RoleModel) Update(id int) (update RoleModel, err error) {
 	if err = global.DB().Table(role.TableName()).First(&update, id).Error; err != nil {
 		return

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"auth-demo/handler"
-	"auth-demo/lib/database/global"
-	authdemo "auth-demo/proto"
 	"context"
 	"time"
+
+	"github.com/crazybber/user/handler"
+	"github.com/crazybber/user/lib/database/global"
+	user "github.com/crazybber/user/proto"
 
 	mopentracing "github.com/micro/go-plugins/wrapper/trace/opentracing"
 
@@ -32,7 +33,7 @@ func main() {
 
 	service.Init()
 
-	authdemo.RegisterAuthDemoHandler(&handler.AuthDemo{})
+	user.RegisterAuthDemoHandler(&handler.User{})
 
 	if err := service.Run(); err != nil {
 		logger.Fatal(err)

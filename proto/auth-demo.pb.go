@@ -4,7 +4,7 @@
 // 	protoc        v3.12.4
 // source: proto/auth-demo.proto
 
-package authdemo
+package auth
 
 import (
 	proto "github.com/golang/protobuf/proto"
@@ -1165,53 +1165,53 @@ func file_proto_auth_demo_proto_rawDescGZIP() []byte {
 
 var file_proto_auth_demo_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_proto_auth_demo_proto_goTypes = []interface{}{
-	(*Message)(nil),           // 0: authdemo.Message
-	(*Request)(nil),           // 1: authdemo.Request
-	(*Response)(nil),          // 2: authdemo.Response
-	(*StreamingRequest)(nil),  // 3: authdemo.StreamingRequest
-	(*StreamingResponse)(nil), // 4: authdemo.StreamingResponse
-	(*Ping)(nil),              // 5: authdemo.Ping
-	(*Pong)(nil),              // 6: authdemo.Pong
-	(*GetUserArgs)(nil),       // 7: authdemo.GetUserArgs
-	(*GetUserResp)(nil),       // 8: authdemo.GetUserResp
-	(*InsertUserArgs)(nil),    // 9: authdemo.InsertUserArgs
-	(*InsertUserResp)(nil),    // 10: authdemo.InsertUserResp
-	(*DeleteUserArgs)(nil),    // 11: authdemo.DeleteUserArgs
-	(*DeleteUserResp)(nil),    // 12: authdemo.DeleteUserResp
-	(*UpdateUserArgs)(nil),    // 13: authdemo.UpdateUserArgs
-	(*UserInfo)(nil),          // 14: authdemo.UserInfo
-	(*GetRoleArgs)(nil),       // 15: authdemo.GetRoleArgs
-	(*GetRoleResp)(nil),       // 16: authdemo.GetRoleResp
-	(*InsertRoleArgs)(nil),    // 17: authdemo.InsertRoleArgs
-	(*InsertRoleResp)(nil),    // 18: authdemo.InsertRoleResp
-	(*DeleteRoleArgs)(nil),    // 19: authdemo.DeleteRoleArgs
-	(*DeleteRoleResp)(nil),    // 20: authdemo.DeleteRoleResp
-	(*UpdateRoleArgs)(nil),    // 21: authdemo.UpdateRoleArgs
-	(*UpdateRoleResp)(nil),    // 22: authdemo.UpdateRoleResp
+	(*Message)(nil),           // 0: user.Message
+	(*Request)(nil),           // 1: user.Request
+	(*Response)(nil),          // 2: user.Response
+	(*StreamingRequest)(nil),  // 3: user.StreamingRequest
+	(*StreamingResponse)(nil), // 4: user.StreamingResponse
+	(*Ping)(nil),              // 5: user.Ping
+	(*Pong)(nil),              // 6: user.Pong
+	(*GetUserArgs)(nil),       // 7: user.GetUserArgs
+	(*GetUserResp)(nil),       // 8: user.GetUserResp
+	(*InsertUserArgs)(nil),    // 9: user.InsertUserArgs
+	(*InsertUserResp)(nil),    // 10: user.InsertUserResp
+	(*DeleteUserArgs)(nil),    // 11: user.DeleteUserArgs
+	(*DeleteUserResp)(nil),    // 12: user.DeleteUserResp
+	(*UpdateUserArgs)(nil),    // 13: user.UpdateUserArgs
+	(*UserInfo)(nil),          // 14: user.UserInfo
+	(*GetRoleArgs)(nil),       // 15: user.GetRoleArgs
+	(*GetRoleResp)(nil),       // 16: user.GetRoleResp
+	(*InsertRoleArgs)(nil),    // 17: user.InsertRoleArgs
+	(*InsertRoleResp)(nil),    // 18: user.InsertRoleResp
+	(*DeleteRoleArgs)(nil),    // 19: user.DeleteRoleArgs
+	(*DeleteRoleResp)(nil),    // 20: user.DeleteRoleResp
+	(*UpdateRoleArgs)(nil),    // 21: user.UpdateRoleArgs
+	(*UpdateRoleResp)(nil),    // 22: user.UpdateRoleResp
 }
 var file_proto_auth_demo_proto_depIdxs = []int32{
-	1,  // 0: authdemo.AuthDemo.Call:input_type -> authdemo.Request
-	3,  // 1: authdemo.AuthDemo.Stream:input_type -> authdemo.StreamingRequest
-	5,  // 2: authdemo.AuthDemo.PingPong:input_type -> authdemo.Ping
-	7,  // 3: authdemo.AuthDemo.GetUser:input_type -> authdemo.GetUserArgs
-	9,  // 4: authdemo.AuthDemo.InsertUser:input_type -> authdemo.InsertUserArgs
-	11, // 5: authdemo.AuthDemo.DeleteUser:input_type -> authdemo.DeleteUserArgs
-	13, // 6: authdemo.AuthDemo.UpdateUser:input_type -> authdemo.UpdateUserArgs
-	15, // 7: authdemo.AuthDemo.GetRole:input_type -> authdemo.GetRoleArgs
-	17, // 8: authdemo.AuthDemo.InsertRole:input_type -> authdemo.InsertRoleArgs
-	19, // 9: authdemo.AuthDemo.DeleteRole:input_type -> authdemo.DeleteRoleArgs
-	21, // 10: authdemo.AuthDemo.UpdateRole:input_type -> authdemo.UpdateRoleArgs
-	2,  // 11: authdemo.AuthDemo.Call:output_type -> authdemo.Response
-	4,  // 12: authdemo.AuthDemo.Stream:output_type -> authdemo.StreamingResponse
-	6,  // 13: authdemo.AuthDemo.PingPong:output_type -> authdemo.Pong
-	14, // 14: authdemo.AuthDemo.GetUser:output_type -> authdemo.UserInfo
-	10, // 15: authdemo.AuthDemo.InsertUser:output_type -> authdemo.InsertUserResp
-	12, // 16: authdemo.AuthDemo.DeleteUser:output_type -> authdemo.DeleteUserResp
-	14, // 17: authdemo.AuthDemo.UpdateUser:output_type -> authdemo.UserInfo
-	16, // 18: authdemo.AuthDemo.GetRole:output_type -> authdemo.GetRoleResp
-	18, // 19: authdemo.AuthDemo.InsertRole:output_type -> authdemo.InsertRoleResp
-	20, // 20: authdemo.AuthDemo.DeleteRole:output_type -> authdemo.DeleteRoleResp
-	22, // 21: authdemo.AuthDemo.UpdateRole:output_type -> authdemo.UpdateRoleResp
+	1,  // 0: user.User.Call:input_type -> user.Request
+	3,  // 1: user.User.Stream:input_type -> user.StreamingRequest
+	5,  // 2: user.User.PingPong:input_type -> user.Ping
+	7,  // 3: user.User.GetUser:input_type -> user.GetUserArgs
+	9,  // 4: user.User.InsertUser:input_type -> user.InsertUserArgs
+	11, // 5: user.User.DeleteUser:input_type -> user.DeleteUserArgs
+	13, // 6: user.User.UpdateUser:input_type -> user.UpdateUserArgs
+	15, // 7: user.User.GetRole:input_type -> user.GetRoleArgs
+	17, // 8: user.User.InsertRole:input_type -> user.InsertRoleArgs
+	19, // 9: user.User.DeleteRole:input_type -> user.DeleteRoleArgs
+	21, // 10: user.User.UpdateRole:input_type -> user.UpdateRoleArgs
+	2,  // 11: user.User.Call:output_type -> user.Response
+	4,  // 12: user.User.Stream:output_type -> user.StreamingResponse
+	6,  // 13: user.User.PingPong:output_type -> user.Pong
+	14, // 14: user.User.GetUser:output_type -> user.UserInfo
+	10, // 15: user.User.InsertUser:output_type -> user.InsertUserResp
+	12, // 16: user.User.DeleteUser:output_type -> user.DeleteUserResp
+	14, // 17: user.User.UpdateUser:output_type -> user.UserInfo
+	16, // 18: user.User.GetRole:output_type -> user.GetRoleResp
+	18, // 19: user.User.InsertRole:output_type -> user.InsertRoleResp
+	20, // 20: user.User.DeleteRole:output_type -> user.DeleteRoleResp
+	22, // 21: user.User.UpdateRole:output_type -> user.UpdateRoleResp
 	11, // [11:22] is the sub-list for method output_type
 	0,  // [0:11] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name

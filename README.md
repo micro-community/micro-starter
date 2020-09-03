@@ -1,6 +1,6 @@
-# AuthDemo Service
+# User Service
 
-This is the AuthDemo service
+This is the User service
 
 Generated with
 

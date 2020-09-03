@@ -1,22 +1,23 @@
 package handler
 
 import (
-	authdemo "auth-demo/proto"
 	"context"
+
+	user "github.com/crazybber/user/proto"
 )
 
-func (e *AuthDemo) GetRole(ctx context.Context, args *authdemo.GetRoleArgs, resp *authdemo.GetRoleResp) error {
+func (e *User) GetRole(ctx context.Context, args *user.GetRoleArgs, resp *user.GetRoleResp) error {
 	panic("implement me")
 }
 
-func (e *AuthDemo) InsertRole(ctx context.Context, args *authdemo.InsertRoleArgs, resp *authdemo.InsertRoleResp) error {
+func (e *User) InsertRole(ctx context.Context, args *user.InsertRoleArgs, resp *user.InsertRoleResp) error {
 	panic("implement me")
 }
 
-func (e *AuthDemo) DeleteRole(ctx context.Context, args *authdemo.DeleteRoleArgs, resp *authdemo.DeleteRoleResp) error {
+func (e *User) DeleteRole(ctx context.Context, args *user.DeleteRoleArgs, resp *user.DeleteRoleResp) error {
 	panic("implement me")
 }
 
-func (e *AuthDemo) UpdateRole(ctx context.Context, args *authdemo.UpdateRoleArgs, resp *authdemo.UpdateRoleResp) error {
+func (e *User) UpdateRole(ctx context.Context, args *user.UpdateRoleArgs, resp *user.UpdateRoleResp) error {
 	panic("implement me")
 }

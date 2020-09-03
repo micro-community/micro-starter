@@ -1,7 +1,7 @@
 package rediscache
 
 import (
-	icache "auth-demo/lib/database/cache"
+	icache "github.com/crazybber/user/lib/database/cache"
 
 	"gopkg.in/redis.v5"
 )

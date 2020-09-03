@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package authdemo;
+package auth;
 
-service AuthDemo{
+service User{
 	rpc Call(Request) returns (Response) {}
 	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
 	rpc PingPong(stream Ping) returns (stream Pong) {}

@@ -1,31 +1,14 @@
 package config
 
 import (
-	"auth-demo/lib/database/nosql"
-	"auth-demo/lib/database/sql"
+	"github.com/crazybber/user/lib/database/sql"
+
+	"github.com/crazybber/user/lib/database/nosql"
 
 	"github.com/micro/go-micro/v3/logger"
 )
 
-type Config struct {
-	Redis *nosql.RedisCfg
-	MySql *sql.MySQLConfig
-}
-
-func Load(fn func() (*Config, error)) *Config {
-	if fn == nil {
-		logger.Warnf("use default config")
-		return Default
-	}
-	cfg, err := fn()
-	if err != nil {
-		logger.Warnf("load config failed: %v, use default", err)
-		return Default
-	}
-
-	return cfg
-}
-
+//Default of config
 var Default = &Config{
 	Redis: &nosql.RedisCfg{
 		MasterName:    "",
@@ -45,4 +28,24 @@ var Default = &Config{
 		MaxOpenConns:    0,
 		ConnMaxLifetime: 0,
 	},
+}
+
+//Config of type
+type Config struct {
+	Redis *nosql.RedisCfg
+	MySql *sql.MySQLConfig
+}
+
+func Load(fn func() (*Config, error)) *Config {
+	if fn == nil {
+		logger.Warnf("use default config")
+		return Default
+	}
+	cfg, err := fn()
+	if err != nil {
+		logger.Warnf("load config failed: %v, use default", err)
+		return Default
+	}
+
+	return cfg
 }

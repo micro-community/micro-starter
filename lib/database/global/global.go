@@ -1,10 +1,13 @@
 package global
 
 import (
-	"auth-demo/config"
-	icache "auth-demo/lib/database/cache"
-	rediscache "auth-demo/lib/database/cache/redis"
-	"auth-demo/lib/database/nosql"
+	"github.com/crazybber/user/config"
+
+	icache "github.com/crazybber/user/lib/database/cache"
+
+	rediscache "github.com/crazybber/user/lib/database/cache/redis"
+
+	"github.com/crazybber/user/lib/database/nosql"
 
 	"github.com/micro/go-micro/v3/logger"
 

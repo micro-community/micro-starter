@@ -3,17 +3,35 @@ package handler
 import (
 	"context"
 
-	"github.com/crazybber/user/models"
-	user "github.com/crazybber/user/proto"
+	"github.com/micro-community/auth/config"
+	"github.com/micro-community/auth/models"
+	user "github.com/micro-community/auth/protos"
 
 	"github.com/micro/go-micro/v3/logger"
-	"github.com/prometheus/common/log"
+	"github.com/micro/micro/v3/service"
 )
 
-func (e *User) GetUser(ctx context.Context, args *user.GetUserArgs, resp *user.UserInfo) error {
+//User implements the auth service interface
+type User struct {
+	Name string
+}
+
+// New returns an initUser handler
+func NewUser(service *service.Service) *User {
+	return &User{
+		Name: service.Name(),
+	}
+}
+
+func NewAuth(cfg *config.Config) *User {
+
+	return &User{}
+}
+
+func (e *User) GetUser(ctx context.Context, req *user.GetUserRequest, resp *user.UserInfo) error {
 	var user models.UserModel
 
-	user.UserId = args.UserId
+	user.UserId = req.UserId
 	result, err := user.Get()
 	if err != nil {
 		logger.Error(err)
@@ -35,12 +53,12 @@ func (e *User) GetUser(ctx context.Context, args *user.GetUserArgs, resp *user.U
 	return nil
 }
 
-func (e *User) InsertUser(ctx context.Context, args *user.InsertUserArgs, resp *user.InsertUserResp) error {
+func (e *User) InsertUser(ctx context.Context, req *user.InsertUserRequest, resp *user.InsertUserResponse) error {
 	var user models.UserModel
 
 	id, err := user.Insert()
 	if err != nil {
-		log.Error(err)
+		logger.Error(err)
 		return err
 	}
 
@@ -49,15 +67,15 @@ func (e *User) InsertUser(ctx context.Context, args *user.InsertUserArgs, resp *
 	return nil
 }
 
-func (e *User) DeleteUser(ctx context.Context, args *user.DeleteUserArgs, resp *user.DeleteUserResp) error {
+func (e *User) DeleteUser(ctx context.Context, req *user.DeleteUserRequest, resp *user.DeleteUserResponse) error {
 	panic("implement me")
 }
 
-func (e *User) UpdateUser(ctx context.Context, args *user.UpdateUserArgs, resp *user.UserInfo) error {
+func (e *User) UpdateUser(ctx context.Context, req *user.UpdateUserRequest, resp *user.UserInfo) error {
 	var data models.UserModel
-	result, err := data.Update(args.UserId)
+	result, err := data.Update(req.UserId)
 	if err != nil {
-		log.Error(err)
+		logger.Error(err)
 		return err
 	}
 

@@ -1,0 +1,51 @@
+{
+    "version": "0.2",
+    "enabledLanguageIds": [
+        "go",
+        "javascript",
+        "markdown",
+        "plaintext",
+        "yml",
+        "toml"
+    ],
+    "enabled": true,
+    // words - list of words to be always considered correct
+    "words": [
+        "bcrypt",
+        "bson",
+        "Dgraph",
+        "drsp",
+        "etcd",
+        "gomodule",
+        "gorm",
+        "icache",
+        "Infow",
+        "inited",
+        "Iprotos",
+        "kubernetes",
+        "mdns",
+        "mongodb",
+        "mtracing",
+        "muserver",
+        "nats",
+        "nosql",
+        "Nquads",
+        "proto",
+        "protobuf",
+        "protoc",
+        "protos",
+        "rbac",
+        "redigo",
+        "sqlite",
+        "svcs",
+        "Uids",
+        "Warnf",
+        "Warnw"
+    ],
+    // flagWords - list of words to be always considered incorrect
+    // This is useful for offensive words and common spelling errors.
+    // For example "hte" should be "the"
+    "flagWords": [
+        "hte"
+    ]
+}

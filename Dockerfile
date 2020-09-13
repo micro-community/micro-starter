@@ -1,3 +1,3 @@
 FROM alpine
-ADD auth-demo /auth-demo
-ENTRYPOINT [ "/auth-demo" ]
+ADD auth /auth
+ENTRYPOINT [ "/auth" ]

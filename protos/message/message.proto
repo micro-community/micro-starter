@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option go_package = ".;message";
+
+package message;
+
+message EventMessage {
+	string EventID =1;
+	// Table
+	string TableID =2;
+	// 创建时间
+	int64 CreateDatetime = 3;
+	// 租户ID
+	string TenantID =4;
+	// 系统时间
+	string SystemType =7;
+	//事件类型编码
+	string EventType =9;
+	// 事件状态:：操作成功 Del：操作失败
+	string EventStatus =10;
+}
+
+
+
+ enum UpdateAction {
+  SET_VALUE  =0;
+  ADD_VALUE = 1;
+  REMOVE_VALUE = 2;
+  HAS_UPDATE = 3;
+}
+
+
+enum CellValueType {
+	 NoOpCellValue = 0;
+   TextCellValue = 1;
+   DateTimeCellValue =2;
+   RecordReferenceCellValue =3;
+   FormulaAndRollupCellValue =4;
+   NumberCellValue =5;
+   CheckboxCellValue =6;
+   MultiSelectCellValue =7;
+   SelectCellValue = 8;
+   MultiAttachmentCellValue = 9;
+   LookupCellValue = 10;
+   UniqueIdCellValue = 11;
+   RatingCellValue =12;
+}
+
+
+message UpdateCellAction{
+
+	UpdateAction UpdateAction =1;
+	CellValueType value =2;
+
+}
+
+message CellUpdate {
+		string coreId =1;
+		string tableId = 2;
+    string  columnId =3;
+    string  rowId =4;
+    string  cellId =5;
+    UpdateCellAction action =6;
+
+}

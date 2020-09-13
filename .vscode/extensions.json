@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "golang.go",
+    "xaver.clang-format",
+    "eamodio.gitlens",
+    "ms-azuretools.vscode-docker",
+    "zxh404.vscode-proto3",
+    "EditorConfig.EditorConfig",
+    "humao.rest-client",
+    "hediet.vscode-drawio",
+    "github.github-vscode-theme",
+    "github.vscode-pull-request-github",
+    "streetsidesoftware.code-spell-checker",
+    "mikey.vscode-fileheader"
+  ]
+}

@@ -1,6 +1,121 @@
 {
-    "cSpell.words": [
-        "Warnf",
-        "nosql"
+  //"window.zoomLevel": 0.5,
+  "explorer.sortOrder": "type",
+  // scm
+  "scm.defaultViewMode": "tree",
+  // Editor
+  "editor.autoIndent": "full",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "editor.cursorBlinking": "solid",
+  "editor.cursorSmoothCaretAnimation": true,
+  "editor.cursorStyle": "line",
+  // "editor.fontSize": 16,
+  //"editor.fontFamily": "FiraCode-Retina, SourceCodePro-Regular, Menlo",
+  "editor.fontLigatures": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  "editor.formatOnSave": true,
+  // "editor.letterSpacing": 0.5,
+  // "editor.lineHeight": 25,
+  "editor.minimap.enabled": false,
+  "editor.renderWhitespace": "none",
+  "editor.tabCompletion": "on",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "off",
+  // Terminal
+  "terminal.integrated.fontFamily": "MesloLGS NF, 'SourceCodePro+Powerline+Awesome Regular', Source Code Pro for Powerline, monospace, Meslo LG M for Powerline",
+  // "terminal.integrated.fontSize": 16,
+  "extensions.showRecommendationsOnlyOnDemand": true,
+  "extensions.ignoreRecommendations": true,
+  // Workbench
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 8,
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#759570",
+    "activityBar.activeBorder": "#cfd3ef",
+    "activityBar.background": "#759570",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#cfd3ef",
+    "activityBarBadge.foreground": "#15202b",
+    "statusBar.background": "#5e7959",
+    "statusBar.foreground": "#e7e7e7",
+    "statusBarItem.hoverBackground": "#759570",
+    "titleBar.activeBackground": "#5e7959",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveBackground": "#5e795999",
+    "titleBar.inactiveForeground": "#e7e7e799"
+  },
+  // File settings
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.js.map": {
+      "when": "$(basename)"
+    }
+  },
+  "files.associations": {
+    "Makefile*": "makefile"
+  },
+  // "files.hotExit": "onExit",
+  "files.defaultLanguage": "go",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  // Peacock Settings
+  "peacock.color": "#5e7959",
+  // GoLang
+  "go.lintOnSave": "file",
+  "go.vetOnSave": "package",
+  "go.useCodeSnippetsOnFunctionSuggest": true,
+  "go.testFlags": [
+    "-v",
+    "-count=1"
+  ],
+  "go.useLanguageServer": true,
+  "go.lintTool": "golangci-lint",
+  "go.testTimeout": "10s",
+  "go.formatTool": "goimports",
+  "cSpell.allowCompoundWords": true,
+  // Proto
+  "clang-format.style": "google",
+  "protoc": {
+    "options": [
+      "--proto_path=${workspaceRoot}",
+      "--proto_path=${env.GOPATH}/src"
     ]
+  },
+  // REST client
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "client-id": "rest-client-api",
+      "username": "demo",
+      "password": "demo",
+      "api-gateway-url": "http://localhost:8080"
+    },
+    "local": {
+      "oidc-issuer-url": "https://localhost/auth/realms/ngx",
+      "api-url": "http://localhost:3000"
+    },
+    "local-admin": {
+      "oidc-issuer-url": "https://localhost/auth/realms/ngx",
+      "api-url": "http://localhost:3000",
+      "username": "ngxadmin",
+      "password": "ngxadmin"
+    },
+    "production": {
+      "oidc-issuer-url": "https://localhost/auth/realms/ngx",
+      "api-url": "https://api.localhost"
+    }
+  },
+  "fileheader.Author": "Edward",
+  "fileheader.tpl": "/*\r\n * @Description: https://github.com/crazybber\r\n * @Author: {author}\r\n * @Date: {createTime}\r\n * @Last Modified by: {lastModifiedBy}\r\n * @Last Modified time: {updateTime}\r\n */\r\n\r\n",
+  "fileheader.LastModifiedBy": "Eamon",
 }

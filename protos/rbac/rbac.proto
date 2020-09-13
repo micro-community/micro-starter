@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option go_package = ".;rbac";
+
+package rbac;
+
+service Rbac {
+    rpc AddUser(User) returns (Response);
+    rpc RemoveUser(Request) returns (Response);
+    rpc QueryUserRoles(Request) returns (Roles);
+    rpc QueryUserResources(Request) returns (Resources);
+    rpc LinkUserRole(LinkRequest) returns (Response);
+    rpc UnlinkUserRole(LinkRequest) returns (Response);
+
+    rpc AddRole(Role) returns (Response);
+    rpc RemoveRole(Request) returns (Response);
+    rpc QueryRoleResources(Request) returns (Resources);
+    rpc LinkRoleResource(LinkRequest) returns (Response);
+    rpc UnlinkRoleResource(LinkRequest) returns (Response);
+
+    rpc AddResource(Resource) returns (Response);
+    rpc RemoveResource(Request) returns (Response);
+}
+
+
+message Request {
+	string id = 1;
+}
+
+message LinkRequest {
+	string id1 = 1;
+	string id2 = 2;
+}
+
+message Response {
+	string msg = 1;
+}
+
+message User {
+	string id = 1;
+	string name = 2;
+    int64 age = 3;
+    string gender = 4;
+}
+
+message Role {
+	string id = 1;
+	string name = 2;
+}
+
+message Roles {
+    repeated Role roles = 1;
+}
+
+message Resource {
+	string id = 1;
+	string name = 2;
+}
+
+message Resources {
+    repeated Resource resources = 1;
+}

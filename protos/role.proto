@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+option go_package = ".;protos";
+package role;
+
+service Role {
+
+	//  Role
+	rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {}
+	rpc InsertRole(InsertRoleRequest) returns (InsertRoleResponse) {}
+	rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {}
+	rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse) {}
+}
+
+
+message GetRoleRequest{
+	int64 role_id = 1;
+}
+
+message GetRoleResponse {
+}
+
+message InsertRoleRequest {
+}
+
+message InsertRoleResponse {
+}
+
+message DeleteRoleRequest {
+	int64 role_id = 1;
+}
+
+message DeleteRoleResponse {
+}
+
+message UpdateRoleRequest {
+	int64 role_id = 1;
+}
+
+message UpdateRoleResponse {
+}

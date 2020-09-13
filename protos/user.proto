@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+option go_package = ".;protos";
+package user;
+
+service User {
+	rpc Call(Request) returns (Response) {}
+	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
+	rpc PingPong(stream Ping) returns (stream Pong) {}
+
+	//	User
+	rpc GetUser(GetUserRequest) returns (UserInfo) {}
+	rpc InsertUser(InsertUserRequest) returns (InsertUserResponse) {}
+	rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {}
+	rpc UpdateUser(UpdateUserRequest) returns (UserInfo) {}
+
+}
+
+message Message {
+	string say = 1;
+}
+
+message Request {
+	string name = 1;
+}
+
+message Response {
+	string msg = 1;
+}
+
+message StreamingRequest {
+	int64 count = 1;
+}
+
+message StreamingResponse {
+	int64 count = 1;
+}
+
+message Ping {
+	int64 stroke = 1;
+}
+
+message Pong {
+	int64 stroke = 1;
+}
+
+
+message GetUserRequest {
+	int64 user_id = 1;
+}
+
+message GetUserResp {
+	repeated int64 Roles = 1;
+}
+
+message InsertUserRequest {
+	int64 user_id = 1;
+}
+
+message InsertUserResponse {
+	int64 user_id = 1;
+}
+
+message DeleteUserRequest {
+	int64 user_id = 1;
+}
+
+message DeleteUserResponse {
+}
+
+message UpdateUserRequest {
+	int64 user_id = 1;
+}
+
+message UserInfo {
+	string name = 1;
+}

@@ -3,21 +3,35 @@ package handler
 import (
 	"context"
 
-	user "github.com/crazybber/user/proto"
+	role "github.com/micro-community/auth/protos"
+	"github.com/micro/micro/v3/service"
 )
 
-func (e *User) GetRole(ctx context.Context, args *user.GetRoleArgs, resp *user.GetRoleResp) error {
-	panic("implement me")
+//Role implements the auth service interface
+type Role struct {
+	RoleID string
+	Name   string
 }
 
-func (e *User) InsertRole(ctx context.Context, args *user.InsertRoleArgs, resp *user.InsertRoleResp) error {
-	panic("implement me")
+// NewRole returns an initUser handler
+func NewRole(service *service.Service) *Role {
+	return &Role{
+		Name: service.Name(),
+	}
 }
 
-func (e *User) DeleteRole(ctx context.Context, args *user.DeleteRoleArgs, resp *user.DeleteRoleResp) error {
-	panic("implement me")
+func (e *User) GetRole(ctx context.Context, req *role.GetRoleRequest, resp *role.GetRoleResponse) error {
+	panic("no implemention")
 }
 
-func (e *User) UpdateRole(ctx context.Context, args *user.UpdateRoleArgs, resp *user.UpdateRoleResp) error {
-	panic("implement me")
+func (e *User) InsertRole(ctx context.Context, req *role.InsertRoleRequest, resp *role.InsertRoleResponse) error {
+	panic("no implemention")
+}
+
+func (e *User) DeleteRole(ctx context.Context, req *role.DeleteRoleRequest, resp *role.DeleteRoleResponse) error {
+	panic("no implemention")
+}
+
+func (e *User) UpdateRole(ctx context.Context, req *role.UpdateRoleRequest, resp *role.UpdateRoleResponse) error {
+	panic("no implemention")
 }

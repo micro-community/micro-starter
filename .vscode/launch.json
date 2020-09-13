@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch go",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/main.go",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        //"MICRO_BROKER": "demopubsub"
+      },
+      "args": []
+      // "args": ["--profile=debug", "--server_address=127.0.0.0.1:8080"]
+    }
+  ]
+}

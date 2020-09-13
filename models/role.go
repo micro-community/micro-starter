@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 
-	"github.com/crazybber/user/lib/database/global"
+	"github.com/micro-community/auth/db"
 )
 
 //RoleModel of system
@@ -24,7 +24,7 @@ func (RoleModel) TableName() string {
 }
 
 func (role *RoleModel) Get() (RoleModel RoleModel, err error) {
-	table := global.DB().Table("sys_role")
+	table := db.DB().Table("sys_role")
 	if role.RoleId != 0 {
 		table = table.Where("role_id = ?", role.RoleId)
 	}
@@ -39,13 +39,13 @@ func (role *RoleModel) Get() (RoleModel RoleModel, err error) {
 }
 
 func (role *RoleModel) Insert() (id int, err error) {
-	i := 0
-	global.DB().Table(role.TableName()).Where("role_name=? or role_key = ?", role.RoleName, role.RoleKey).Count(&i)
+	var i int64 = 0
+	db.DB().Table(role.TableName()).Where("role_name=? or role_key = ?", role.RoleName, role.RoleKey).Count(&i)
 	if i > 0 {
 		return 0, errors.New("角色名称或者角色标识已经存在！")
 	}
 	role.UpdateBy = ""
-	result := global.DB().Table(role.TableName()).Create(&role)
+	result := db.DB().Table(role.TableName()).Create(&role)
 	if result.Error != nil {
 		err = result.Error
 		return
@@ -56,7 +56,7 @@ func (role *RoleModel) Insert() (id int, err error) {
 
 //Update 修改
 func (role *RoleModel) Update(id int) (update RoleModel, err error) {
-	if err = global.DB().Table(role.TableName()).First(&update, id).Error; err != nil {
+	if err = db.DB().Table(role.TableName()).First(&update, id).Error; err != nil {
 		return
 	}
 
@@ -70,7 +70,7 @@ func (role *RoleModel) Update(id int) (update RoleModel, err error) {
 
 	//参数1:是要修改的数据
 	//参数2:是修改的数据
-	if err = global.DB().Table(role.TableName()).Model(&update).Updates(&role).Error; err != nil {
+	if err = db.DB().Table(role.TableName()).Model(&update).Updates(&role).Error; err != nil {
 		return
 	}
 	return
@@ -78,7 +78,7 @@ func (role *RoleModel) Update(id int) (update RoleModel, err error) {
 
 //批量删除
 func (role *RoleModel) BatchDelete(id []int) (Result bool, err error) {
-	if err = global.DB().Table(role.TableName()).Where("role_id in (?)", id).Delete(RoleModel{}).Error; err != nil {
+	if err = db.DB().Table(role.TableName()).Where("role_id in (?)", id).Delete(RoleModel{}).Error; err != nil {
 		return
 	}
 	Result = true

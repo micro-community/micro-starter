@@ -1,41 +1,55 @@
 package main
 
 import (
-	"context"
 	"time"
 
-	"github.com/crazybber/user/handler"
-	"github.com/crazybber/user/lib/database/global"
-	user "github.com/crazybber/user/proto"
+	"github.com/micro-community/auth/handler"
+	"github.com/micro/cli/v2"
 
-	mopentracing "github.com/micro/go-plugins/wrapper/trace/opentracing"
-
-	"github.com/micro/go-micro"
-	"github.com/micro/go-micro/service/grpc"
 	"github.com/micro/go-micro/v3/logger"
-	opentracing "github.com/opentracing/opentracing-go"
+	"github.com/micro/micro/v3/cmd"
+	"github.com/micro/micro/v3/service"
+
+	//load config for db and profile
+	_ "github.com/micro-community/auth/db"
+	_ "github.com/micro-community/auth/profile"
 )
 
 func main() {
 
-	global.Init()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	service := grpc.NewService(
-		micro.Name("auth.service"),
-		micro.RegisterTTL(time.Second*30),
-		micro.RegisterInterval(time.Second*10),
-		micro.Context(ctx),
-		micro.WrapHandler(mopentracing.NewHandlerWrapper(opentracing.GlobalTracer())),
+	srv := service.New(
+		service.Name("micro v3 starter"),
+		service.RegisterTTL(time.Second*30),
+		service.RegisterInterval(time.Second*10),
 	)
 
-	service.Init()
+	// add customer Flags
+	cmdFlags := []cli.Flag{
+		&cli.StringFlag{
+			Name:    "conf_path",
+			EnvVars: []string{"MICRO_STARTER_CONFIG_PATH"},
+			Usage:   "config path of current app",
+			Value:   "./",
+		},
+		&cli.BoolFlag{
+			Name:    "debug",
+			Usage:   "run in debug mode",
+			EnvVars: []string{"MICRO_STARTER_DEBUG_MODE"},
+			Value:   true,
+		},
+	}
 
-	user.RegisterAuthDemoHandler(&handler.User{})
+	cmdFlags = append(cmd.DefaultCmd.App().Flags, cmdFlags...)
+	cmdOption := cmd.Flags(cmdFlags...)
+	cmd.DefaultCmd.Init(cmdOption)
 
-	if err := service.Run(); err != nil {
+	// handle user
+	srv.Handle(handler.NewUser(srv))
+
+	// handle role
+	srv.Handle(handler.NewRole(srv))
+
+	if err := srv.Run(); err != nil {
 		logger.Fatal(err)
 	}
 }

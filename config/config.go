@@ -10,7 +10,7 @@ import (
 
 //Service configuration and register
 const (
-	DbName    = "some_db"
+	DbName    = "auth" // database name
 	TenantKey = "tenantids"
 	BASE_PATH = "./"
 )

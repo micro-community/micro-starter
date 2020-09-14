@@ -2,22 +2,25 @@ package mysql
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/micro-community/auth/db"
-	user "github.com/micro-community/auth/protos"
+	"github.com/micro-community/auth/models"
 	"golang.org/x/crypto/bcrypt"
 )
 
-//UserModel data
-type UserModel struct {
+//userRepository data
+type UserRepository struct {
+	mu    *sync.Mutex
+	users []*models.User
 }
 
-func (UserModel) TableName() string {
+func (UserRepository) TableName() string {
 	return "user"
 }
 
 // 获取用户数据
-func (u UserModel) Get() (UserModel UserModel, err error) {
+func (u UserRepository) Get() (UserRepository UserRepository, err error) {
 	table := db.DB().Table(u.TableName()).Select([]string{"user.*", "role.role_name"})
 	table = table.Joins("left join role on user.role_id=role.role_id")
 	if u.UserId != 0 {
@@ -44,16 +47,16 @@ func (u UserModel) Get() (UserModel UserModel, err error) {
 		table = table.Where("post_id = ?", u.PostId)
 	}
 
-	if err = table.First(&UserModel).Error; err != nil {
+	if err = table.First(&UserRepository).Error; err != nil {
 		return
 	}
 
-	UserModel.Password = ""
+	UserRepository.Password = ""
 	return
 }
 
 //加密
-func (u *UserModel) Encrypt() (err error) {
+func (u *UserRepository) Encrypt() (err error) {
 	if u.Password == "" {
 		return
 	}
@@ -68,7 +71,7 @@ func (u *UserModel) Encrypt() (err error) {
 }
 
 //添加
-func (u UserModel) Insert() (id int64, err error) {
+func (u UserRepository) Insert() (id int64, err error) {
 	if err = u.Encrypt(); err != nil {
 		return
 	}
@@ -90,7 +93,7 @@ func (u UserModel) Insert() (id int64, err error) {
 }
 
 //修改
-func (u *UserModel) Update(id int64) (update UserModel, err error) {
+func (u *UserRepository) Update(id int64) (update UserRepository, err error) {
 	if u.Password != "" {
 		if err = u.Encrypt(); err != nil {
 			return
@@ -110,15 +113,15 @@ func (u *UserModel) Update(id int64) (update UserModel, err error) {
 	}
 	return
 }
-func (u *UserModel) BatchDelete(id []int) (Result bool, err error) {
-	if err = db.DB().Table(u.TableName()).Where("user_id in (?)", id).Delete(&UserModel{}).Error; err != nil {
+func (u *UserRepository) BatchDelete(id []int) (Result bool, err error) {
+	if err = db.DB().Table(u.TableName()).Where("user_id in (?)", id).Delete(&UserRepository{}).Error; err != nil {
 		return
 	}
 	Result = true
 	return
 }
 
-func (u *UserModel) ToView() *user.UserInfo {
+func (u *UserRepository) ToView() *user.UserInfo {
 	var v user.UserInfo
 	v.Name = u.NickName
 	//.....

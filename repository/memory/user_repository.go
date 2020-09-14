@@ -15,7 +15,7 @@ type userRepository struct {
 func NewUserRepository() repository.IUser {
 	users := make([]*models.User, 0)
 	users = append(users, &models.User{
-		Id:       1,
+		ID:       1,
 		Name:     "admin",
 		Password: "123456",
 	})
@@ -31,7 +31,7 @@ func (r *userRepository) FindById(id int64) (*models.User, error) {
 	defer r.mu.Unlock()
 
 	for _, user := range r.users {
-		if user.Id == id {
+		if user.ID == id {
 			return user, nil
 		}
 	}
@@ -55,7 +55,7 @@ func (r *userRepository) Add(user *models.User) error {
 	defer r.mu.Unlock()
 
 	id := int64(len(r.users) + 1)
-	user.Id = id
+	user.ID = id
 
 	r.users = append(r.users, user)
 

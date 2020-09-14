@@ -1,9 +1,12 @@
 package models
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+//data will be stored into mongodb
 
 //Event type
 type Event struct {
@@ -15,8 +18,6 @@ type Event struct {
 	Created   time.Time          `bson:"created,omitempty" json:"created"`
 	Updated   time.Time          `bson:"updated,omitempty" json:"updated"`
 }
-
-
 
 type Log struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id"`

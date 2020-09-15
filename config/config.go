@@ -17,6 +17,8 @@ const (
 
 //Default of config
 var Default = &Config{
+
+	DefaultDB: "memory",
 	Redis: &cache.RedisCfg{
 		MasterName:    "",
 		SentinelAddrs: nil,
@@ -51,13 +53,14 @@ var Default = &Config{
 
 //Config of type
 type Config struct {
-	Host    string
-	Timeout int
-	Redis   *cache.RedisCfg
-	MySQL   *sql.MySQLConfig
-	SQLite  *sql.SQLiteConfig
-	Mongodb *nosql.MongoCfg
-	Dgraph  *nosql.DgraphCfg
+	DefaultDB string
+	Host      string
+	Timeout   int
+	Redis     *cache.RedisCfg
+	MySQL     *sql.MySQLConfig
+	SQLite    *sql.SQLiteConfig
+	Mongodb   *nosql.MongoCfg
+	Dgraph    *nosql.DgraphCfg
 }
 
 var Cfg Config

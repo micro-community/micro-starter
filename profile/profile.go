@@ -1,34 +1,23 @@
 package profile
 
 import (
-	"github.com/micro/cli/v2"
 	"github.com/micro/go-micro/v3/auth/noop"
-	"github.com/micro/go-micro/v3/broker"
 	"github.com/micro/go-micro/v3/broker/http"
-	"github.com/micro/go-micro/v3/client"
 	"github.com/micro/go-micro/v3/config"
-	"github.com/micro/go-micro/v3/registry"
 	"github.com/micro/go-micro/v3/registry/mdns"
-	"github.com/micro/go-micro/v3/router"
 	"github.com/micro/go-micro/v3/runtime/local"
-	"github.com/micro/go-micro/v3/server"
 	"github.com/micro/go-micro/v3/store/file"
 	"github.com/micro/micro/v3/service/logger"
+	"github.com/urfave/cli/v2"
 
 	memStream "github.com/micro/go-micro/v3/events/stream/memory"
-	regRouter "github.com/micro/go-micro/v3/router/registry"
 
 	mProfile "github.com/micro/micro/v3/profile"
 	microAuth "github.com/micro/micro/v3/service/auth"
-	microBroker "github.com/micro/micro/v3/service/broker"
-	microClient "github.com/micro/micro/v3/service/client"
 	microConfig "github.com/micro/micro/v3/service/config"
 	microEvents "github.com/micro/micro/v3/service/events"
 
-	microRegistry "github.com/micro/micro/v3/service/registry"
-	microRouter "github.com/micro/micro/v3/service/router"
 	microRuntime "github.com/micro/micro/v3/service/runtime"
-	microServer "github.com/micro/micro/v3/service/server"
 	microStore "github.com/micro/micro/v3/service/store"
 )
 
@@ -44,9 +33,9 @@ var Dev = &mProfile.Profile{
 		microRuntime.DefaultRuntime = local.NewRuntime()
 		microStore.DefaultStore = file.NewStore()
 		microConfig.DefaultConfig, _ = config.NewConfig()
-		setBroker(http.NewBroker())
-		setRegistry(mdns.NewRegistry())
-		setupJWTRules()
+		mProfile.SetupBroker(http.NewBroker())
+		mProfile.SetupRegistry(mdns.NewRegistry())
+		//	mProfile.SetupJWTRules()
 		var err error
 		microEvents.DefaultStream, err = memStream.NewStream()
 		if err != nil {
@@ -55,27 +44,4 @@ var Dev = &mProfile.Profile{
 
 		return nil
 	},
-}
-
-func setRegistry(reg registry.Registry) {
-	microRegistry.DefaultRegistry = reg
-	microRouter.DefaultRouter = regRouter.NewRouter(router.Registry(reg))
-	microServer.DefaultServer.Init(server.Registry(reg))
-	microClient.DefaultClient.Init(client.Registry(reg))
-}
-
-func setBroker(b broker.Broker) {
-	microBroker.DefaultBroker = b
-	microClient.DefaultClient.Init(client.Broker(b))
-	microServer.DefaultServer.Init(server.Broker(b))
-}
-
-func setupJWTRules() {
-
-	logger.Warn("Dev Mode: No auth needed")
-	//for _, rule := range inAuth.SystemRules {
-	//	if err := microAuth.DefaultAuth.Grant(rule); err != nil {
-	//		logger.Fatal("Error creating default rule: %v", err)
-	//	}
-	//}
 }

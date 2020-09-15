@@ -13,7 +13,6 @@ type RoleRepository struct {
 	tableName string
 	mu        *sync.Mutex
 	roles     []*models.Role
-	
 }
 
 func (r RoleRepository) TableName() string {

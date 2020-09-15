@@ -2,23 +2,28 @@ package mongo
 
 import (
 	"context"
+	"sync"
 
 	"github.com/micro-community/auth/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var EventDao *Event
-
-type Event struct {
+//EventRepository for event store
+type EventRepository struct {
 	db *mongo.Collection
+	mu *sync.Mutex
 }
 
 func init() {
-	//EventDao = &Event{db:mongodb.Client.Collection("event")}
+	//EventDao = &EventRepository{db:mongodb.Client.Collection("event")}
 }
 
-func (e *Event) Create(ctx context.Context, event models.Event) (interface{}, error) {
+func (e *EventRepository) Create(ctx context.Context, event models.Event) (interface{}, error) {
+
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
 	rsp, err := e.db.InsertOne(ctx, event)
 	if err != nil {
 		return nil, err
@@ -26,7 +31,7 @@ func (e *Event) Create(ctx context.Context, event models.Event) (interface{}, er
 	return rsp.InsertedID, nil
 }
 
-func (e *Event) Find(ctx context.Context, query bson.M) ([]models.Event, error) {
+func (e *EventRepository) Find(ctx context.Context, query bson.M) ([]models.Event, error) {
 	var events []models.Event
 	cursor, err := e.db.Find(ctx, query)
 	if err != nil {
@@ -38,7 +43,7 @@ func (e *Event) Find(ctx context.Context, query bson.M) ([]models.Event, error) 
 	return events, nil
 }
 
-func (e *Event) FindOne(ctx context.Context, query bson.D) (*models.Event, error) {
+func (e *EventRepository) FindOne(ctx context.Context, query bson.D) (*models.Event, error) {
 	var event models.Event
 	if err := e.db.FindOne(ctx, query).Decode(&event); err != nil {
 		return nil, err
@@ -46,10 +51,22 @@ func (e *Event) FindOne(ctx context.Context, query bson.D) (*models.Event, error
 	return &event, nil
 }
 
-func (e *Event) UpdateOne(ctx context.Context, query, update bson.D) (*mongo.UpdateResult, error) {
+func (e *EventRepository) UpdateOne(ctx context.Context, query, update bson.D) (*mongo.UpdateResult, error) {
+
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
 	rsp, err := e.db.UpdateOne(ctx, query, update)
 	if err != nil {
 		return nil, err
 	}
 	return rsp, nil
+}
+
+func (e *EventRepository) Delete(ctx context.Context, event models.Event) (err error) {
+
+	if _, err = e.db.DeleteOne(context.TODO(), e); err != nil {
+		return
+	}
+	return
 }

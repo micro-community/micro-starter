@@ -4,10 +4,10 @@
 package k8s
 
 import (
-	"github.com/micro/cli/v2"
 	"github.com/micro/go-micro/v3/auth/jwt"
 	"github.com/micro/go-micro/v3/router/static"
 	"github.com/micro/go-micro/v3/runtime/kubernetes"
+	"github.com/urfave/cli/v2"
 
 	//	microMetrics "github.com/micro/micro/v3/service/metrics"
 	mProfile "github.com/micro/micro/v3/profile"

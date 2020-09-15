@@ -36,9 +36,11 @@
         "protos",
         "rbac",
         "redigo",
+        "rediscli",
         "sqlite",
         "svcs",
         "Uids",
+        "urfave",
         "Warnf",
         "Warnw"
     ],

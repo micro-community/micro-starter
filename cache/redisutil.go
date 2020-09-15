@@ -1,7 +1,9 @@
 package cache
 
 import (
-	"gopkg.in/redis.v5"
+	"context"
+
+	"github.com/go-redis/redis/v8"
 )
 
 type RedisCfg struct {
@@ -14,11 +16,10 @@ type RedisCfg struct {
 	DB      int `json:"db"`
 	MaxIdle int `json:"max_idle"`
 
-
 	Url            string `json:"url"`
-	MaxActive      int `json:"max_active"`
-	Wait           bool `json:"wait"`
-	MaxIdleTimeout int `json:"max_idle_timeout"`
+	MaxActive      int    `json:"max_active"`
+	Wait           bool   `json:"wait"`
+	MaxIdleTimeout int    `json:"max_idle_timeout"`
 }
 
 type Client struct {
@@ -47,6 +48,6 @@ func NewClient(cfg RedisCfg) (client *redis.Client, err error) {
 		})
 	}
 
-	err = client.Ping().Err()
+	err = client.Ping(context.TODO()).Err()
 	return
 }

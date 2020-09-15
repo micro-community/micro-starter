@@ -4,29 +4,22 @@ import (
 	"context"
 	"time"
 
+	"github.com/micro-community/auth/models"
 	"github.com/micro/go-micro/v3/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// RoleTable - collection name
-const RoleTable string = "role"
 
-// Role - role
-type Role struct {
-	db *mongo.Database
-	// Database specific fields
-	ID        primitive.ObjectID `bson:"_id,omitempty"`
-	UserID    primitive.ObjectID `bson:"user_id,omitempty" json:"user_id,omitempty"`
-	CreatedAt time.Time          `bson:"created_at"`
+type RoleRepository struct {
+	db *mongo.Collection
 }
 
 // ListAllRole - gets all
-func (r *Role) ListAllRole() (roles []Role, err error) {
+func (r *RoleRepository) ListAllRole() (roles []models.Role, err error) {
 
-	collection := r.db.Collection(RoleTable)
-	cursor, err := collection.Find(context.TODO(), bson.D{})
+	cursor, err := r.db.Find(context.TODO(), bson.D{})
 	if err != nil {
 		logger.Infof("Find error: %v", err)
 		return
@@ -41,16 +34,14 @@ func (r *Role) ListAllRole() (roles []Role, err error) {
 }
 
 // GetByID - gets role by id
-func (r *Role) GetByID(ID string) (role Role, err error) {
+func (r *RoleRepository) GetByID(ID string) (role models.Role, err error) {
 
-	collection := r.db.Collection(RoleTable)
 	objID, err := primitive.ObjectIDFromHex(ID)
 	if err != nil {
 		logger.Infof("Invalid id: %v", err)
 		return
 	}
-
-	sr := collection.FindOne(context.TODO(), bson.M{"_id": objID})
+	sr :=  r.db.FindOne(context.TODO(), bson.M{"_id": objID})
 	err = sr.Decode(&role)
 	if err != nil {
 		logger.Infof("Error decoding data: ", err)
@@ -60,7 +51,7 @@ func (r *Role) GetByID(ID string) (role Role, err error) {
 }
 
 // Create - creates new row in collection
-func (r *Role) Create(ctx context.Context) (err error) {
+func (r *RoleRepository) Create(ctx context.Context) (err error) {
 	var tempUserID primitive.ObjectID
 	userID := ""
 
@@ -75,8 +66,7 @@ func (r *Role) Create(ctx context.Context) (err error) {
 	r.UserID = tempUserID
 	r.CreatedAt = time.Now()
 
-	collection := r.db.Collection(RoleTable)
-	if _, err = collection.InsertOne(ctx, r); err != nil {
+	if _, err =  r.db.InsertOne(ctx, r); err != nil {
 		logger.Infof("Error inserting role: %v", r)
 		return
 	}
@@ -86,11 +76,9 @@ func (r *Role) Create(ctx context.Context) (err error) {
 }
 
 // Delete - deletes role
-func (r *Role) Delete() (err error) {
+func (r *RoleRepository) Delete() (err error) {
 
-	collection := r.db.Collection(RoleTable)
-
-	if _, err = collection.DeleteOne(context.TODO(), r); err != nil {
+	if _, err =  r.db.DeleteOne(context.TODO(), r); err != nil {
 		logger.Infof("Error deleting role: %v", r)
 		return
 	}

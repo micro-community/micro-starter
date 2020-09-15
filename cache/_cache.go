@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"google.golang.org/protobuf/proto"
-	"gopkg.in/redis.v5"
 
 	"golang.org/x/sync/singleflight"
 )

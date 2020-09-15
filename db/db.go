@@ -3,11 +3,11 @@ package db
 import (
 	"sync"
 
+	"github.com/go-redis/redis/v8"
 	rcache "github.com/micro-community/auth/cache"
 	"github.com/micro-community/auth/config"
 	"github.com/micro-community/auth/db/sql"
 	"github.com/micro/go-micro/v3/logger"
-	"gopkg.in/redis.v5"
 	"gorm.io/gorm"
 )
 
@@ -21,11 +21,11 @@ var (
 )
 
 func init() {
-	Init()
+	InitCache()
+	BuildDBContext(config.Cfg.DefaultDB)
 }
 
-func Init() {
-
+func InitCache() {
 	var err error
 	redisCli, err = rcache.NewClient(*cfg.Redis)
 	if err != nil {
@@ -40,6 +40,18 @@ func Init() {
 //BuildDBContext for data
 func BuildDBContext(dbCase string) {
 	dbConn = dbCase
+	switch dbConn {
+	case "mysql", "sql":
+		// DB初始化
+	case "mongo":
+		// connect to mongo
+	case "dgraph":
+		//connect to dgraph
+	default:
+		//use memory to mock
+
+	}
+
 }
 
 func DB() *gorm.DB {
@@ -48,7 +60,6 @@ func DB() *gorm.DB {
 		return db
 	}
 	db = sql.NewSQLite(cfg.SQLite)
-
 	once.Do(func() {
 		migrate()
 	})

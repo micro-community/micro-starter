@@ -1,7 +1,7 @@
 package cache
 
 import (
-	redis "gopkg.in/redis.v5"
+	redis "github.com/go-redis/redis/v8"
 )
 
 type RedisCache struct {

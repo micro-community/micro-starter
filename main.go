@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/micro-community/auth/handler"
-	"github.com/micro/cli/v2"
+	"github.com/urfave/cli/v2"
 
 	"github.com/micro/go-micro/v3/logger"
 	"github.com/micro/micro/v3/cmd"

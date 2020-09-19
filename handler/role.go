@@ -4,19 +4,22 @@ import (
 	"context"
 
 	role "github.com/micro-community/auth/protos"
-	"github.com/micro/micro/v3/service"
+	"github.com/micro-community/auth/service"
+	mservice "github.com/micro/micro/v3/service"
 )
 
 //RoleHandler implements the role proto interface
 type RoleHandler struct {
-	RoleID string
-	Name   string
+	RoleID  string
+	Name    string
+	service *service.RoleService
 }
 
 // NewRole returns an initUser handler
-func NewRole(service *service.Service) *RoleHandler {
+func NewRole(service *mservice.Service, roleService *service.RoleService) *RoleHandler {
 	return &RoleHandler{
-		Name: service.Name(),
+		Name:    service.Name(),
+		service: roleService,
 	}
 }
 

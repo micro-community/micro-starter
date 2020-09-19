@@ -13,8 +13,12 @@
     "words": [
         "bcrypt",
         "bson",
+        "cachectx",
+        "Debugf",
         "Dgraph",
+        "dlog",
         "drsp",
+        "Eamon",
         "etcd",
         "gomodule",
         "gorm",
@@ -42,6 +46,7 @@
         "Uids",
         "urfave",
         "Warnf",
+        "Warningf",
         "Warnw"
     ],
     // flagWords - list of words to be always considered incorrect

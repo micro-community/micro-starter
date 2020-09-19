@@ -20,11 +20,12 @@ type Rbac struct {
 	dg *dgo.Dgraph
 }
 
-func New(dg *dgo.Dgraph) *Rbac {
+func NewRBACRepository(dg *dgo.Dgraph) *Rbac {
 	return &Rbac{
 		dg: dg,
 	}
 }
+
 
 // AddUser is a single request handler called via client.AddUser or the generated client code
 func (e *Rbac) AddUser(ctx context.Context, req *rbac.User, rsp *rbac.Response) error {

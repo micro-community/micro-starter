@@ -4,127 +4,119 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/micro-community/auth/db"
 	"github.com/micro-community/auth/models"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 //userRepository data
 type UserRepository struct {
-	mu    *sync.Mutex
-	users []*models.User
+	mu        *sync.Mutex
+	db        *gorm.DB
+	tableName string
 }
 
-func (UserRepository) TableName() string {
-	return "user"
+func (u UserRepository) TableName() string {
+	if u.tableName == "" {
+		u.tableName = "user"
+	}
+	return u.tableName
 }
 
-// 获取用户数据
-func (u UserRepository) Get() (UserRepository UserRepository, err error) {
-	table := db.DB().Table(u.TableName()).Select([]string{"user.*", "role.role_name"})
+func (u UserRepository) Table() *gorm.DB {
+	return u.Table()
+}
+
+// Get 校验获取用户数据
+func (u UserRepository) Get(user models.User) error {
+	table := u.Table().Select([]string{"user.*", "role.role_name"})
+
 	table = table.Joins("left join role on user.role_id=role.role_id")
-	if u.UserId != 0 {
-		table = table.Where("user_id = ?", u.UserId)
+	if user.ID != 0 {
+		table = table.Where("user_id = ?", user.ID)
 	}
-
-	if u.Username != "" {
-		table = table.Where("username = ?", u.Username)
+	if user.Name != "" {
+		table = table.Where("username = ?", user.Name)
 	}
-
-	if u.Password != "" {
-		table = table.Where("password = ?", u.Password)
+	if user.Password != "" {
+		table = table.Where("password = ?", user.Password)
 	}
-
-	if u.RoleId != 0 {
-		table = table.Where("role_id = ?", u.RoleId)
+	if user.RoleId != 0 {
+		table = table.Where("role_id = ?", user.RoleId)
 	}
-
-	if u.DeptId != 0 {
-		table = table.Where("dept_id = ?", u.DeptId)
+	if user.DeptId != 0 {
+		table = table.Where("dept_id = ?", user.DeptId)
 	}
-
-	if u.PostId != 0 {
-		table = table.Where("post_id = ?", u.PostId)
+	if user.PostionId != 0 {
+		table = table.Where("post_id = ?", user.PostionId)
 	}
-
-	if err = table.First(&UserRepository).Error; err != nil {
-		return
+	if err := table.First(&user).Error; err != nil {
+		return err
 	}
-
-	UserRepository.Password = ""
-	return
+	return nil
 }
 
 //加密
-func (u *UserRepository) Encrypt() (err error) {
-	if u.Password == "" {
-		return
+func (u *UserRepository) Encrypt(password string) (string, error) {
+	if password == "" {
+		return "", nil
 	}
-
 	var hash []byte
-	if hash, err = bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost); err != nil {
-		return
-	} else {
-		u.Password = string(hash)
-		return
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return "", err
 	}
+	return string(hash), nil
+
 }
 
-//添加
-func (u UserRepository) Insert() (id int64, err error) {
-	if err = u.Encrypt(); err != nil {
-		return
-	}
+//Insert 添加 user
+func (u UserRepository) Insert(user models.User) (id int64, err error) {
+	encryptedPassword, err := u.Encrypt(user.Password)
 
+	if encryptedPassword == "" || err != nil {
+		return -1, errors.New("password encrypted error")
+	}
 	// check 用户名
 	var count int64
-	db.DB().Table(u.TableName()).Where("username = ?", u.Username).Count(&count)
+	u.Table().Where("username = ?", user.Name).Count(&count)
 	if count > 0 {
-		err = errors.New("账户已存在！")
+		err = errors.New("user account exist")
 		return
 	}
 
 	//添加数据
-	if err = db.DB().Table(u.TableName()).Create(&u).Error; err != nil {
-		return
+	if err = u.Table().Create(&u).Error; err != nil {
+		return -1, err
 	}
-	id = u.UserId
 	return
 }
 
-//修改
-func (u *UserRepository) Update(id int64) (update UserRepository, err error) {
-	if u.Password != "" {
-		if err = u.Encrypt(); err != nil {
-			return
+//Update 修改
+func (u *UserRepository) Update(user models.User) (updatedUser models.User, err error) {
+
+	var encryptedPassword string
+	if user.Password != "" {
+		encryptedPassword, err = u.Encrypt(user.Password)
+		if encryptedPassword == "" || err != nil {
+			return models.User{}, errors.New("password encrypted error")
 		}
 	}
-	if err = db.DB().Table(u.TableName()).First(&update, id).Error; err != nil {
+	if err = u.Table().First(&updatedUser, user.ID).Error; err != nil {
 		return
 	}
-	if u.RoleId == 0 {
-		u.RoleId = update.RoleId
-	}
 
-	//参数1:是要修改的数据
-	//参数2:是修改的数据
-	if err = db.DB().Table(u.TableName()).Model(&update).Updates(&u).Error; err != nil {
+	if err = u.Table().Model(&updatedUser).Updates(&user).Error; err != nil {
 		return
 	}
 	return
 }
-func (u *UserRepository) BatchDelete(id []int) (Result bool, err error) {
-	if err = db.DB().Table(u.TableName()).Where("user_id in (?)", id).Delete(&UserRepository{}).Error; err != nil {
+
+func (u *UserRepository) BatchDelete(id []int) (result bool, err error) {
+	if err = u.Table().Where("user_id in (?)", id).Delete(&models.User{}).Error; err != nil {
 		return
 	}
-	Result = true
+	result = true
 	return
-}
-
-func (u *UserRepository) ToView() *user.UserInfo {
-	var v user.UserInfo
-	v.Name = u.NickName
-	//.....
-
-	return &v
 }

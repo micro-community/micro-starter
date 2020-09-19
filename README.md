@@ -1,6 +1,8 @@
 # micro starter
 
-micro v3 starter
+micro v3 starter framework
+
+micro(v3) 单(微)服务能力集框架,有兴趣的朋友，热烈欢迎 PR.
 
 ## install
 

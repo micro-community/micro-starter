@@ -3,8 +3,7 @@ package db
 import (
 	"sync"
 
-	"github.com/go-redis/redis/v8"
-	rcache "github.com/micro-community/auth/cache"
+	"github.com/micro-community/auth/cache"
 	"github.com/micro-community/auth/config"
 	"github.com/micro-community/auth/db/sql"
 	"github.com/micro/go-micro/v3/logger"
@@ -12,26 +11,20 @@ import (
 )
 
 var (
-	cfg      *config.Config
-	redisCli *redis.Client
-	db       *gorm.DB
-	cacheCli rcache.ICache
-	once     sync.Once
-	dbConn   string
+	cacheCli      *cache.Client
+	db            *gorm.DB
+	once          sync.Once
+	dbContextType string
 )
 
 func init() {
 	InitCache()
-	BuildDBContext(config.Cfg.DefaultDB)
+
 }
 
 func InitCache() {
 	var err error
-	redisCli, err = rcache.NewClient(*cfg.Redis)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	cacheCli, err = rcache.New(redisCli)
+	cacheCli, err = cache.NewClient(config.Cfg.Redis)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -39,10 +32,10 @@ func InitCache() {
 
 //BuildDBContext for data
 func BuildDBContext(dbCase string) {
-	dbConn = dbCase
-	switch dbConn {
-	case "mysql", "sql":
-		// DB初始化
+	dbContextType = dbCase
+	switch dbContextType {
+	case "mysql", "sqlite":
+		// connet to gorm data source
 	case "mongo":
 		// connect to mongo
 	case "dgraph":
@@ -59,45 +52,21 @@ func DB() *gorm.DB {
 	if db != nil {
 		return db
 	}
-	db = sql.NewSQLite(cfg.SQLite)
+	db = sql.NewSQLite(config.Cfg.SQLite)
 	once.Do(func() {
 		migrate()
 	})
 
+	if sqlDB, err := db.DB(); err != nil {
+		// SetMaxIdleConns 设置空闲连接池中连接的最大数量
+		sqlDB.SetMaxIdleConns(config.Cfg.MaxIdleConns)
+
+		// SetMaxOpenConns 设置打开数据库连接的最大数量。
+		sqlDB.SetMaxOpenConns(config.Cfg.MaxOpenConns)
+
+		// SetConnMaxLifetime 设置了连接可复用的最大时间。
+		sqlDB.SetConnMaxLifetime(config.Cfg.ConnMaxLifetime)
+	}
+
 	return db
-}
-
-// User Model
-type User struct {
-	gorm.Model
-	Name     string
-	Code     string
-	ID       uint
-	Gender   int
-	Password string
-}
-
-func migrate() {
-
-	//Migrate the schema
-	db.AutoMigrate(&User{})
-
-	// Create
-	db.Create(&User{Code: "D42", ID: 100})
-
-	// Read
-	var user User
-
-	db.First(&user, 1)                 // find product with integer primary key
-	db.First(&user, "code = ?", "D42") // find product with code D42
-
-	// Update - update product's price to 200
-	db.Model(&user).Update("Price", 200)
-	// Update - update multiple fields
-	db.Model(&user).Updates(User{ID: 200, Code: "F42"}) // non-zero fields
-	db.Model(&user).Updates(map[string]interface{}{"ID": 200, "Code": "F42"})
-
-	// Delete - delete product
-	db.Delete(&user, 1)
-
 }

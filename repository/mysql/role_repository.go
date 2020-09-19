@@ -3,46 +3,57 @@ package mysql
 import (
 	"errors"
 	"sync"
+	"time"
 
-	"github.com/micro-community/auth/db"
 	"github.com/micro-community/auth/models"
+	"gorm.io/gorm"
 )
 
 //UserModel data
 type RoleRepository struct {
-	tableName string
 	mu        *sync.Mutex
-	roles     []*models.Role
+	db        *gorm.DB
+	tableName string
 }
 
 func (r RoleRepository) TableName() string {
-	return "role"
+	if r.tableName == "" {
+		r.tableName = "role"
+	}
+	return r.tableName
+}
+func (r RoleRepository) Table() *gorm.DB {
+	return r.Table()
 }
 
-func (r *RoleRepository) Get() (role models.Role, err error) {
+func (r *RoleRepository) Get(role models.Role) (models.Role, error) {
 
-	table := db.DB().Table("sys_role")
-	if r.ID != 0 {
-		table = table.Where("role_id = ?", r.ID)
+	table := r.Table()
+	if role.ID != 0 {
+		table = table.Where("role_id = ?", role.ID)
 	}
-	if r.Name != "" {
-		table = table.Where("role_name = ?", r.Name)
+	if role.Name != "" {
+		table = table.Where("role_name = ?", role.Name)
 	}
-	if err = table.First(&role).Error; err != nil {
-		return
+	var result models.Role
+	err := table.First(&result).Error
+
+	if err != nil {
+		return models.Role{}, err
 	}
 
-	return
+	return result, nil
 }
 
-func (role *RoleRepository) Insert() (id int, err error) {
+func (r *RoleRepository) Insert(role models.Role) (id int, err error) {
 	var i int64 = 0
-	db.DB().Table(role.TableName()).Where("role_name=? or role_key = ?", role.Name, role.Key).Count(&i)
+	r.Table().Where("role_name=? or role_key = ?", role.Name, role.Key).Count(&i)
 	if i > 0 {
-		return 0, errors.New("角色名称或者角色标识已经存在！")
+		return 0, errors.New("role exist")
 	}
-	role.UpdateBy = ""
-	result := db.DB().Table(role.TableName()).Create(&role)
+
+	role.CreatedAt = time.Now()
+	result := r.Table().Create(&role)
 	if result.Error != nil {
 		err = result.Error
 		return
@@ -52,30 +63,28 @@ func (role *RoleRepository) Insert() (id int, err error) {
 }
 
 //Update 修改
-func (role *RoleRepository) Update(id int) (update models.Role, err error) {
-	if err = db.DB().Table(role.TableName()).First(&update, id).Error; err != nil {
-		return
+func (r *RoleRepository) Update(update models.Role) (id int, err error) {
+
+	var targetRole models.Role
+
+	if err = r.Table().First(&targetRole, update.ID).Error; err != nil {
+		return -1, errors.New("target role not exist")
 	}
 
-	if role.Name != "" && role.Name != update.Name {
-		return update, errors.New("角色名称不允许修改！")
+	if update.Key != "" && targetRole.Key != update.Key {
+		return -1, errors.New("role key modify forbiden")
 	}
 
-	if role.Key != "" && role.Key != update.Key {
-		return update, errors.New("角色标识不允许修改！")
+	if err = r.Table().Model(&targetRole).Updates(&update).Error; err != nil {
+		return -1, errors.New("update role error")
 	}
 
-	//参数1:是要修改的数据
-	//参数2:是修改的数据
-	if err = db.DB().Table(role.TableName()).Model(&update).Updates(&role).Error; err != nil {
-		return
-	}
-	return
+	return targetRole.ID, nil
 }
 
 //批量删除
-func (role *RoleRepository) BatchDelete(id []int) (Result bool, err error) {
-	if err = db.DB().Table(role.TableName()).Where("role_id in (?)", id).Delete(Role{}).Error; err != nil {
+func (r *RoleRepository) BatchDelete(id []int) (Result bool, err error) {
+	if err = r.Table().Where("role_id in (?)", id).Delete(models.Role{}).Error; err != nil {
 		return
 	}
 	Result = true

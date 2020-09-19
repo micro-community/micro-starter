@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"time"
 
 	"github.com/micro-community/auth/models"
 	"github.com/micro/go-micro/v3/logger"
@@ -11,21 +10,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-
 type RoleRepository struct {
 	db *mongo.Collection
 }
 
 // ListAllRole - gets all
-func (r *RoleRepository) ListAllRole() (roles []models.Role, err error) {
+func (r *RoleRepository) ListAllRole(ctx context.Context) (roles []models.Role, err error) {
 
-	cursor, err := r.db.Find(context.TODO(), bson.D{})
+	cursor, err := r.db.Find(ctx, bson.D{})
 	if err != nil {
 		logger.Infof("Find error: %v", err)
 		return
 	}
-	defer cursor.Close(context.TODO())
-	if err = cursor.All(context.TODO(), &roles); err != nil {
+	defer cursor.Close(ctx)
+	if err = cursor.All(ctx, &roles); err != nil {
 		logger.Infof("Error getting data: ", err)
 		return
 	}
@@ -34,14 +32,14 @@ func (r *RoleRepository) ListAllRole() (roles []models.Role, err error) {
 }
 
 // GetByID - gets role by id
-func (r *RoleRepository) GetByID(ID string) (role models.Role, err error) {
+func (r *RoleRepository) GetByID(ctx context.Context, ID string) (role models.Role, err error) {
 
 	objID, err := primitive.ObjectIDFromHex(ID)
 	if err != nil {
 		logger.Infof("Invalid id: %v", err)
 		return
 	}
-	sr :=  r.db.FindOne(context.TODO(), bson.M{"_id": objID})
+	sr := r.db.FindOne(context.TODO(), bson.M{"_id": objID})
 	err = sr.Decode(&role)
 	if err != nil {
 		logger.Infof("Error decoding data: ", err)
@@ -50,23 +48,11 @@ func (r *RoleRepository) GetByID(ID string) (role models.Role, err error) {
 	return
 }
 
-// Create - creates new row in collection
-func (r *RoleRepository) Create(ctx context.Context) (err error) {
-	var tempUserID primitive.ObjectID
-	userID := ""
+// Create - creates new role in collection
+func (r *RoleRepository) Create(ctx context.Context, roleName string) (err error) {
+	tempRoleID := primitive.NewObjectID()
 
-	if ctx.Value("UserID") != nil {
-		userID = ctx.Value("UserID").(string)
-	}
-
-	if userID == "" {
-		logger.Error("User not specified in context")
-		tempUserID = primitive.NewObjectID()
-	}
-	r.UserID = tempUserID
-	r.CreatedAt = time.Now()
-
-	if _, err =  r.db.InsertOne(ctx, r); err != nil {
+	if _, err = r.db.InsertOne(ctx, tempRoleID); err != nil {
 		logger.Infof("Error inserting role: %v", r)
 		return
 	}
@@ -76,10 +62,10 @@ func (r *RoleRepository) Create(ctx context.Context) (err error) {
 }
 
 // Delete - deletes role
-func (r *RoleRepository) Delete() (err error) {
+func (r *RoleRepository) Delete(ctx context.Context, roleID string) (err error) {
 
-	if _, err =  r.db.DeleteOne(context.TODO(), r); err != nil {
-		logger.Infof("Error deleting role: %v", r)
+	if _, err = r.db.DeleteOne(context.TODO(), roleID); err != nil {
+		logger.Infof("Error deleting role: %v", roleID)
 		return
 	}
 

@@ -25,7 +25,7 @@ type ILogger interface {
 var defaultLogger *Logger
 
 const (
-	defaultServiceName = "Foxconn"
+	defaultServiceName = "micro-starter"
 	formatterJSON      = "json"
 	formatterText      = "text"
 )
@@ -86,7 +86,7 @@ func newFormatter() logrus.Formatter {
 //TODO back log :watch level change
 //TODO back log :static
 //TODO review code: log
-//TODO load config from envirement
+//TODO load config from environment
 type Logger struct {
 	ServiceName string
 	IP          string
@@ -133,12 +133,12 @@ func GetCurLevel() logrus.Level {
 	return Level()
 }
 
-//IsDebugLevel Returen is debug mode or not
+//IsDebugLevel Return is debug mode or not
 func IsDebugLevel() bool {
 	return IsLogLevel(5)
 }
 
-//IsLogLevel Returen is <level> mode or not
+//IsLogLevel Return is <level> mode or not
 func IsLogLevel(level int) bool {
 	return Level() == logrus.Level(level)
 }

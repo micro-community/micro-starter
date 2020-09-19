@@ -1,14 +1,10 @@
 package main
 
 import (
-	"time"
-
-	"github.com/micro-community/auth/handler"
-	"github.com/urfave/cli/v2"
-
 	"github.com/micro/go-micro/v3/logger"
 	"github.com/micro/micro/v3/cmd"
 	"github.com/micro/micro/v3/service"
+	"github.com/urfave/cli/v2"
 
 	//load config for db and profile
 	_ "github.com/micro-community/auth/db"
@@ -19,8 +15,8 @@ func main() {
 
 	srv := service.New(
 		service.Name("micro v3 starter"),
-		service.RegisterTTL(time.Second*30),
-		service.RegisterInterval(time.Second*10),
+		// service.RegisterTTL(time.Second*30),
+		// service.RegisterInterval(time.Second*10),
 	)
 
 	// add customer Flags
@@ -41,13 +37,10 @@ func main() {
 
 	cmdFlags = append(cmd.DefaultCmd.App().Flags, cmdFlags...)
 	cmdOption := cmd.Flags(cmdFlags...)
+
 	cmd.DefaultCmd.Init(cmdOption)
 
-	// handle user
-	srv.Handle(handler.NewUser(srv))
-
-	// handle role
-	srv.Handle(handler.NewRole(srv))
+	buildingStartupService(srv)
 
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

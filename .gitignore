@@ -228,6 +228,5 @@ FakesAssemblies/
 *.orig
 !vendor/github.com/micro/go-micro/server/debug/
 /debug
-
+settings.json
 auth
-.vscode/settings

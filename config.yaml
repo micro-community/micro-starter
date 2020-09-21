@@ -1,11 +1,32 @@
-persistence: "" # default memory
-database:
-  engine: "mysql"
-  host: "127.0.0.1"
-  port: "3306"
-  user: ""
-  password: ""
-  name: ""
-  maxOpenConns: 10
-  maxIdleConns: 1
-  connMaxLifetime: 60000000000
+DBType: "memory"
+MaxOpenConns: 10
+MaxIdleConns: 100
+ConnMaxLifetime: 60000000000
+Redis:
+  MasterName: "" # for HA Cluster
+  SentinelAddrs:
+    - localhost1
+    - localhost2
+    - localhost3
+  Host: "localhost"
+  Password: "12345"
+  MaxIdle: 1
+  MaxIdleTimeout: 1
+SQLite:
+  User: "admin"
+  Password: "admin"
+  Host: "localhost"
+  DBName: "starter"
+  Path: "./starter.db"
+Mongo:
+  User: ""
+  Password: ""
+  Host: "localhost"
+  Port: 27017
+  DBName: "auth"
+Dgraph:
+  User: "dadmin"
+  Password: "dadmin"
+  Host: "localhost"
+  Port: 0
+  DBName: "auth"

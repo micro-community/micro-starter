@@ -7,13 +7,13 @@ import (
 
 	"github.com/micro/go-micro/v3/registry/mdns"
 	"github.com/micro/go-micro/v3/runtime/local"
-	"github.com/micro/go-micro/v3/store/file"
-	"github.com/micro/micro/v3/service/logger"
 
-	//	mem "github.com/micro/go-micro/v3/store/memory"
+	//"github.com/micro/go-micro/v3/store/file"
+	"github.com/micro/micro/v3/service/logger"
 
 	mSrcFile "github.com/micro/go-micro/v3/config/source/file"
 	memStream "github.com/micro/go-micro/v3/events/stream/memory"
+	mem "github.com/micro/go-micro/v3/store/memory"
 
 	mProfile "github.com/micro/micro/v3/profile"
 	microAuth "github.com/micro/micro/v3/service/auth"
@@ -39,8 +39,8 @@ var Dev = &mProfile.Profile{
 	Setup: func(ctx *cli.Context) error {
 		microAuth.DefaultAuth = noop.NewAuth()
 		microRuntime.DefaultRuntime = local.NewRuntime()
-		microStore.DefaultStore = file.NewStore()
-		//	microStore.DefaultStore = mem.NewStore()
+		//microStore.DefaultStore = file.NewStore()
+		microStore.DefaultStore = mem.NewStore()
 		microConfig.DefaultConfig, _ = config.NewConfig(
 			config.WithSource(
 				mSrcFile.NewSource(

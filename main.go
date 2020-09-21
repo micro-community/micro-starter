@@ -6,8 +6,8 @@ import (
 	"github.com/micro/micro/v3/service"
 	"github.com/urfave/cli/v2"
 
-	//load config for db and profile
-	_ "github.com/micro-community/auth/db"
+	"github.com/micro-community/auth/config"
+	//load profile
 	_ "github.com/micro-community/auth/profile"
 )
 
@@ -38,6 +38,8 @@ func main() {
 	cmdOption := cmd.Flags(cmdFlags...)
 
 	cmd.DefaultCmd.Init(cmdOption)
+
+	config.LoadConfigWithDefault(func() *config.Config { return nil })
 
 	buildingStartupService(srv)
 

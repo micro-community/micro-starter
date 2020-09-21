@@ -33,6 +33,7 @@
         "mdns",
         "mongodb",
         "mtracing",
+        "muclient",
         "muserver",
         "nats",
         "nosql",

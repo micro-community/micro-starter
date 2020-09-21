@@ -61,8 +61,8 @@ func buildingStartupService(srv *mservice.Service) {
 }
 
 func buildDBContext(c *dig.Container) {
-	db.BuildDBContext(config.Cfg.DefaultDB)
-	switch config.Cfg.DefaultDB {
+	db.BuildDBContext(config.Cfg.DBType)
+	switch config.Cfg.DBType {
 	case "dgraph":
 		c.Provide(dgraph.NewRBACRepository)
 	default:

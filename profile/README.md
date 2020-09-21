@@ -5,8 +5,9 @@ set up boost configuration for micro runtime which means different components of
 - local
 
   - registry mdns
-  - config memory
+  - config file
   - broker http
+  - store memory
 
 - k8s
 

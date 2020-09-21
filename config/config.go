@@ -2,8 +2,8 @@
  * @Author: Edward https://github.com/crazybber
  * @Date: 2020-09-21 17:43:58
  * @Last Modified by: Eamon
- * @Last Modified time: 2020-09-21 19:12:04
- * @Description: Current File for Configuration of current service
+ * @Last Modified time: 2020-09-21 22:24:25
+ * @Description: Configuration of current service
  */
 
 package config
@@ -18,24 +18,16 @@ import (
 	"github.com/micro/micro/v3/service/config"
 )
 
-//读取根目录下的配置，用于初始化配置
-func init() {
-	//  get config
-	svcs := config.Get("micro", "status", "services").StringSlice(nil)
-	logger.Infof("Services config %+v", svcs)
-
-}
-
 //Config of type
 type Config struct {
-	DefaultDB string
-	Host      string
-	Timeout   int
-	Redis     cache.RedisCfg
-	MySQL     *sql.MySQLConfig
-	SQLite    *sql.SQLiteConfig
-	Mongodb   *nosql.MongoCfg
-	Dgraph    *nosql.DgraphCfg
+	DBType  string
+	Host    string
+	Timeout int
+	Redis   cache.RedisCfg
+	MySQL   *sql.MySQLConfig
+	SQLite  *sql.SQLiteConfig
+	Mongodb *nosql.MongoCfg
+	Dgraph  *nosql.DgraphCfg
 
 	// sql db config
 	MaxOpenConns    int
@@ -47,16 +39,15 @@ type Config struct {
 var (
 	TenantKey      = "tenantids"
 	BASE_HERF_PATH = "./"
-	Cfg            Config //User Loaded COnfig,if not setted ,default value will be used.
+	Cfg            *Config //User Loaded COnfig,if not setted ,default value will be used.
 )
 
 //Default of config
 var Default = &Config{
 
-	DefaultDB: "memory",
-
-	MaxOpenConns:    10,
-	MaxIdleConns:    100,
+	DBType:          "memory",
+	MaxOpenConns:    2,
+	MaxIdleConns:    10,
 	ConnMaxLifetime: time.Duration(time.Hour),
 
 	Redis: cache.RedisCfg{
@@ -72,7 +63,6 @@ var Default = &Config{
 		User:     "",
 		Password: "",
 		Host:     "localhost",
-		Port:     0,
 		DBName:   "",
 		Path:     "",
 	},
@@ -81,7 +71,7 @@ var Default = &Config{
 		Password: "",
 		Host:     "localhost",
 		Port:     27017,
-		DBName:   "",
+		DBName:   "auth",
 	},
 	Dgraph: &nosql.DgraphCfg{
 		User:     "",
@@ -93,17 +83,32 @@ var Default = &Config{
 }
 
 //LoadConfigWithDefault Load Config With Default
-func LoadConfigWithDefault(fn func() (*Config, error)) *Config {
+func LoadConfigWithDefault(fn func() *Config) {
 
 	if fn == nil {
 		logger.Warnf("use default config")
-		return Default
+		Cfg = Default
 	}
-	cfg, err := fn()
 
-	if err != nil {
-		logger.Warnf("load config failed: %v, use default", err)
-		return Default
+	Cfg = fn()
+
+	if Cfg == nil {
+		logger.Warnf("use customer config failed: %v, use default")
+		Cfg = Default
 	}
-	return cfg
+
+	//  get config
+	dbType := config.Get("DBType").String("")
+	if len(dbType) > 0 {
+		Cfg.DBType = dbType
+	}
+
+	logger.Infof("DBType %+v", dbType)
+
+	redisHost := config.Get("Redis", "Host").String("")
+	if len(redisHost) > 0 {
+		Cfg.Redis.Host = redisHost
+	}
+
+	logger.Infof("Redis Host %+v", redisHost)
 }

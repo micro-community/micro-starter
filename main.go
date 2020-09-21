@@ -14,9 +14,8 @@ import (
 func main() {
 
 	srv := service.New(
-		service.Name("micro v3 starter"),
-		// service.RegisterTTL(time.Second*30),
-		// service.RegisterInterval(time.Second*10),
+		service.Name("micro-v3-starter"),
+		service.Version("latest"),
 	)
 
 	// add customer Flags

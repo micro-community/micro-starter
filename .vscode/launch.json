@@ -9,10 +9,13 @@
       "program": "${workspaceFolder}/main.go",
       "cwd": "${workspaceFolder}",
       "env": {
-        //"MICRO_BROKER": "demopubsub"
+        "MICRO_STARTER_CONFIG_PATH": "./",
+        "MICRO_STARTER_DEBUG_MODE": "true"
       },
-      "args": []
-      // "args": ["--profile=debug", "--server_address=127.0.0.0.1:8080"]
+      "args": [
+        "--profile=debug",
+        "--server_address=127.0.0.0.1:8080"
+      ]
     }
   ]
 }

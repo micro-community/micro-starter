@@ -33,6 +33,7 @@ var Kubernetes = &mProfile.Profile{
 		// config configmap
 		// store ...
 		microAuth.DefaultAuth = jwt.NewAuth()
+
 		//	setupJWTRules()
 		// Set up a default metrics reporter (being careful not to clash with any that have already been set):
 		// if !microMetrics.IsSet() {

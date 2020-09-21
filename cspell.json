@@ -14,6 +14,7 @@
         "bcrypt",
         "bson",
         "cachectx",
+        "CLCF",
         "Debugf",
         "Dgraph",
         "dlog",
@@ -22,9 +23,11 @@
         "etcd",
         "gomodule",
         "gorm",
+        "HERF",
         "icache",
         "Infow",
         "inited",
+        "ipnet",
         "Iprotos",
         "kubernetes",
         "mdns",
@@ -47,6 +50,7 @@
         "urfave",
         "Warnf",
         "Warningf",
+        "Warnln",
         "Warnw"
     ],
     // flagWords - list of words to be always considered incorrect

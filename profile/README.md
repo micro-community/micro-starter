@@ -1,6 +1,6 @@
 # profile for server start up
 
-set up boost configuration
+set up boost configuration for micro runtime which means different components of go-micro
 
 - local
 

@@ -1,3 +1,11 @@
+/*
+ * @Author: Edward https://github.com/crazybber
+ * @Date: 2020-09-21 17:37:45
+ * @Last Modified by: Eamon
+ * @Last Modified time: 2020-09-21 17:38:29
+ * @Description:  All Service Instance will be created
+ */
+
 package main
 
 import (
@@ -12,7 +20,7 @@ import (
 	"go.uber.org/dig"
 )
 
-//serviceCollection for DI.
+//serviceCollection for DI ,all DI　All Service Instance will be created Here
 type serviceCollection struct {
 	dig.In
 	roleService     *service.RoleService

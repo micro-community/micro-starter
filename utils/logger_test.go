@@ -14,12 +14,10 @@ func TestLogrus(t *testing.T) {
 }
 
 func TestSetting(t *testing.T) {
-	SetServiceName("log-example2")
-	Info(nil, "hello logger!")
-	Debug(nil, "debug")
+	SetServiceName("log-example, logrus")
+	Info(nil, "hello logger in  logrus")
+	Debug(nil, "debug logrus")
 	SetLevel(logrus.DebugLevel)
-	Debug(nil, "debug")
 	UseJSONFormatter()
-	Info(nil, "hello logger!")
-	Infof(nil, "test format:%s", "hello logger")
+	Infof(nil, "logrus: test format:%s", "hello logger")
 }

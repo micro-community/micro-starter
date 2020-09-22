@@ -6,7 +6,7 @@
  * @Description:  All Service Instance will be created
  */
 
-package main
+package profile
 
 import (
 	"github.com/micro-community/auth/config"
@@ -30,8 +30,8 @@ type serviceCollection struct {
 	// .... 其他的service
 }
 
-//buildingStartupService build all service relationship
-func buildingStartupService(srv *mservice.Service) {
+//BuildingStartupService build all service relationship
+func BuildingStartupService(srv *mservice.Service) {
 
 	c := dig.New()
 
@@ -69,5 +69,7 @@ func buildDBContext(c *dig.Container) {
 		// 默认memory
 		c.Provide(memory.NewUserRepository)
 	}
+
+	db.InitCache()
 
 }

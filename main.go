@@ -8,7 +8,7 @@ import (
 
 	"github.com/micro-community/auth/config"
 	//load profile
-	_ "github.com/micro-community/auth/profile"
+	"github.com/micro-community/auth/profile"
 )
 
 func main() {
@@ -41,7 +41,7 @@ func main() {
 
 	config.LoadConfigWithDefault(func() *config.Config { return nil })
 
-	buildingStartupService(srv)
+	profile.BuildingStartupService(srv)
 
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

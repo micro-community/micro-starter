@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch go",
+      "name": "Debug run go",
       "type": "go",
       "request": "launch",
       "mode": "auto",
@@ -13,8 +13,8 @@
         "MICRO_STARTER_DEBUG_MODE": "true"
       },
       "args": [
-        "--profile=debug",
-        "--server_address=127.0.0.0.1:8080"
+        "--profile=dev",
+        "--service_address=127.0.0.0.1:8080"
       ]
     }
   ]

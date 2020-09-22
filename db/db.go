@@ -17,11 +17,6 @@ var (
 	dbContextType string
 )
 
-func init() {
-	InitCache()
-
-}
-
 func InitCache() {
 	var err error
 	cacheCli, err = cache.NewClient(config.Cfg.Redis)

@@ -2,7 +2,7 @@
  * @Author: Edward https://github.com/crazybber
  * @Date: 2020-09-21 17:43:58
  * @Last Modified by: Eamon
- * @Last Modified time: 2020-09-21 22:24:25
+ * @Last Modified time: 2020-09-22 19:22:59
  * @Description: Configuration of current service
  */
 
@@ -93,7 +93,7 @@ func LoadConfigWithDefault(fn func() *Config) {
 	Cfg = fn()
 
 	if Cfg == nil {
-		logger.Warnf("use customer config failed: %v, use default")
+		logger.Warnf("try to use customer config failed, use default")
 		Cfg = Default
 	}
 
@@ -102,7 +102,6 @@ func LoadConfigWithDefault(fn func() *Config) {
 	if len(dbType) > 0 {
 		Cfg.DBType = dbType
 	}
-
 	logger.Infof("DBType %+v", dbType)
 
 	redisHost := config.Get("Redis", "Host").String("")

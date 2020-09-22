@@ -20,7 +20,7 @@ protoc -I.  --go_out=protos --micro_out=protos protos/user.proto
 protoc -Iprotos  --go_out=protos --micro_out=protos role.proto
 ```
 
-following for graph design for dgraph
+### the following for graph design for dgraph
 
 ```bash
 protoc -Iprotos/rbac  --go_out=protos/rbac --micro_out=protos/rbac rbac.proto

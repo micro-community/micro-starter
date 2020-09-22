@@ -2,7 +2,7 @@
  * @Author: Edward https://github.com/crazybber
  * @Date: 2020-09-21 17:37:45
  * @Last Modified by: Eamon
- * @Last Modified time: 2020-09-21 17:38:29
+ * @Last Modified time: 2020-09-22 22:34:43
  * @Description:  All Service Instance will be created
  */
 
@@ -49,6 +49,8 @@ func BuildingStartupService(srv *mservice.Service) {
 		if sc == nil {
 			logger.Warnf("no service got in DI Container")
 		}
+
+		srv.Handle(handler.NewRBAC(srv, sc.userService, sc.roleService, sc.resourceService))
 		// handle user
 		srv.Handle(handler.NewUser(srv, sc.userService))
 		// handle role

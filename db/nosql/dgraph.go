@@ -77,6 +77,19 @@ func (d *DormDB) QueryExist(targetID int64) (*api.Response, error) {
 
 }
 
+//QueryWithID  ..
+func (d *DormDB) QueryWithID(targetID, queryString string) (*api.Response, error) {
+	// Assigned uids for nodes which were created would be returned in the resp.AssignedUids map.
+	variables := map[string]string{"$id": targetID}
+	resp, err := d.txn().QueryWithVars(context.Background(), queryString, variables)
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	return resp, err
+
+}
+
 //QueryWithVar  ..
 func (d *DormDB) QueryWithVar(targetID, queryString string) (*api.Response, error) {
 
@@ -117,7 +130,23 @@ func (d *DormDB) Mutate(b []byte) (*api.Response, error) {
 
 func (d *DormDB) BatchDelete(uids []string) error {
 
-	
+	ctx := context.Background()
+
+	for _, uid := range uids {
+		data := map[string]string{"uid": uid}
+		//	logger.Info(data)
+		pb, err := json.Marshal(data)
+		if err != nil {
+			return err
+		}
+		_, err = d.txn().Mutate(ctx, &api.Mutation{DeleteJson: pb})
+		if err != nil {
+			return err
+		}
+	}
+
+	return d.txn().Commit(ctx)
+
 }
 
 func (d *DormDB) Delete(b []byte) error {

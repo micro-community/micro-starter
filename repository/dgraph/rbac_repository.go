@@ -72,31 +72,13 @@ func (e *RbacRepository) RemoveUser(ctx context.Context, user *models.User) erro
 	// 首先查询数据库中是否已有该ID
 
 	drsp, err := db.DDB().QueryExist(user.ID)
-	
+
 	var r Root
 	err = json.Unmarshal(drsp.Json, &r)
 	if err != nil {
 		return fmt.Errorf("json unmarshal Root error: %v", err)
 	}
-
-	// mutate multiple items, then commit
-	txn := e.dg.NewTxn()
-	for _, uid := range r.UID {
-		d := map[string]string{"uid": uid.UID}
-		logger.Info(d)
-		pb, err := json.Marshal(d)
-		if err != nil {
-			return err
-		}
-		mu := &api.Mutation{
-			DeleteJson: pb,
-		}
-		drsp, err = txn.Mutate(ctx, mu)
-		if err != nil {
-			return fmt.Errorf("txn Mutate error: %v", err)
-		}
-	}
-	err = txn.Commit(ctx)
+	err = db.DDB().BatchDelete(r.UID)
 	if err != nil {
 		return fmt.Errorf("RemoveUser commit error: %v", err)
 	}
@@ -104,95 +86,102 @@ func (e *RbacRepository) RemoveUser(ctx context.Context, user *models.User) erro
 }
 
 // QueryUserRoles is a single request handler called via client.QueryUserRoles or the generated client code
-func (e *RbacRepository) QueryUserRoles(ctx context.Context, user *models.User) error {
-	logger.Infof("Received RbacRepository.QueryUserRoles request, ID: %s", user.ID)
-	variables := map[string]string{"$id1": req.Id}
-	q := `query Me($id1: string){
-		find(func: type(User)) @filter(eq(person.id, $id1)) @normalize {
+func (e *RbacRepository) QueryUserRoles(ctx context.Context, role *models.Role) ([]*models.Role, error) {
+	logger.Infof("Received RbacRepository.QueryUserRoles request, ID: %d", role.ID)
+
+	targetID := fmt.Sprintf("%d", role.ID)
+	//	variables := map[string]string{"$id": targetID}
+	q := `query Me($id: string){
+		roles(func: type(User)) @filter(eq(person.id, $id)) @normalize {
 			role {
-				role.id: role.id
-				role.name: role.name
+				id
+			  name
 			}
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
-	if err != nil {
-		return fmt.Errorf("query err: %v", err)
-	}
-	type Root struct {
-		Role []Role `json:"find"`
-	}
 
-	var r Root
-	err = json.Unmarshal(drsp.Json, &r)
+	drsp, err := db.DDB().QueryWithVar(targetID, q)
 	if err != nil {
-		return fmt.Errorf("json unmarshal Root error: %v", err)
+		return nil, fmt.Errorf("query err: %v", err)
 	}
-
-	for _, role := range r.Role {
-		rsp.Roles = append(rsp.Roles, &models.Role{Id: role.ID, Name: role.Name})
+	var roles []models.Role
+	err = json.Unmarshal(drsp.Json, &roles)
+	if err != nil {
+		return nil, fmt.Errorf("json unmarshal roles error: %v", err)
 	}
-	return nil
+	var resRoles []*models.Role
+	for _, role := range roles {
+		resRoles = append(resRoles, &models.Role{ID: role.ID, Name: role.Name})
+	}
+	return resRoles, nil
 }
 
 // QueryUserResources is a single request handler called via client.QueryUserResources or the generated client code
-func (e *RbacRepository) QueryUserResources(ctx context.Context, user *models.User) error {
-	logger.Infof("Received RbacRepository.QueryUserResources request, ID: %s", req.Id)
-	variables := map[string]string{"$id1": req.Id}
+func (e *RbacRepository) QueryUserResources(ctx context.Context, user *models.User) ([]*models.Resource, error) {
+	logger.Infof("Received RbacRepository.QueryUserResources request, ID: %d", user.ID)
+
+	targetID := fmt.Sprintf("%d", user.ID)
+	//variables := map[string]string{"$id1": user.ID}
+
 	q := `query Me($id1: string){
-		find(func: type(User)) @filter(eq(person.id, $id1)) @normalize {
+		resources(func: type(User)) @filter(eq(person.id, $id1)) @normalize {
 			role {
 				resource {
-					resource.id: resource.id
-					resource.name: resource.name
+					resource.id
+					resource.name
 				}
 			}
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+
+	drsp, err := db.DDB().QueryWithVar(targetID, q)
 	if err != nil {
-		return fmt.Errorf("query err: %v", err)
+		return nil, fmt.Errorf("query err: %v", err)
 	}
 	type Root struct {
-		Resource []Resource `json:"find"`
+		Resources []models.Resource `json:"Resource"`
 	}
 
 	var r Root
 	err = json.Unmarshal(drsp.Json, &r)
 	if err != nil {
-		return fmt.Errorf("json unmarshal Root error: %v", err)
+		return nil, fmt.Errorf("json unmarshal Root error: %v", err)
 	}
 
-	seen := map[string]bool{}
-	for _, res := range r.Resource {
+	//过滤重复
+	seen := map[int]bool{}
+	resRoles := []*models.Resource{}
+	for _, res := range r.Resources {
 		if !seen[res.ID] {
 			seen[res.ID] = true
-			rsp.Resources = append(rsp.Resources, &models.Resource{Id: res.ID, Name: res.Name})
+			resRoles = append(resRoles, &models.Resource{ID: res.ID, Name: res.Name})
 		}
 	}
-	return nil
+	return resRoles, nil
 }
 
 // LinkUserRole is a single request handler called via client.LinkUserRole or the generated client code
-func (e *RbacRepository) LinkUserRole(ctx context.Context, role *models.Role) error {
-	logger.Info("Received RbacRepository.LinkUserRole request: id1: %s, id2: %s", req.Id1, req.Id2)
-	// 首先查询id1 和 id2 对应的 uid
-	variables := map[string]string{"$id1": req.Id1, "$id2": req.Id2}
-	q := `query Me($id1: string, $id2: string){
-		find_id1(func: type(User)) @filter(eq(person.id, $id1)) {
+func (e *RbacRepository) LinkUserRole(ctx context.Context, user *models.User, role *models.Role) error {
+	logger.Info("Received RbacRepository.LinkUserRole request: user: %d, role: %d", user.ID, role.ID)
+
+	// 首先查询user id 和 role 对应的 id
+	variables := map[string]string{"$id1": user.ID, "$id2": role.ID}
+	q := `query Me($id1: string, $rid2id: string){
+		user(func: type(User)) @filter(eq(person.id, $id1)) {
 			uid
 		}
-		find_id2(func: type(Role)) @filter(eq(role.id, $id2)) {
+		role(func: type(Role)) @filter(eq(role.id, $id2)) {
 			uid
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+
+	drsp, err := db.DDB().QueryWithVar(q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
 	type Root struct {
-		UID1 []UID `json:"find_id1"`
-		UID2 []UID `json:"find_id2"`
+		UID1 []models.UID `json:"user"`
+		UID2 []models.UID `json:"role"`
 	}
 
 	var r Root
@@ -218,12 +207,12 @@ func (e *RbacRepository) LinkUserRole(ctx context.Context, role *models.Role) er
 		ObjectId:  r.UID2[0].UID,
 	}
 	mu.Set = []*api.NQuad{nq}
-	_, err = e.dg.NewTxn().Mutate(ctx, mu)
+	_, err = db.DDB().Mutate(ctx, mu)
 	if err != nil {
 		return fmt.Errorf("LinkUserRole Mutate error: %v", err)
 	}
 
-	rsp.Msg = "OK"
+//	rsp.Msg = "OK"
 	return nil
 }
 
@@ -240,7 +229,7 @@ func (e *RbacRepository) UnlinkUserRole(ctx context.Context, role *models.Role) 
 			uid
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -272,7 +261,7 @@ func (e *RbacRepository) UnlinkUserRole(ctx context.Context, role *models.Role) 
 		ObjectId:  r.UID2[0].UID,
 	}
 	mu.Del = []*api.NQuad{nq}
-	_, err = e.dg.NewTxn().Mutate(ctx, mu)
+	_, err = db.DDB().Mutate(ctx, mu)
 	if err != nil {
 		return fmt.Errorf("UnlinkUserRole Mutate error: %v", err)
 	}
@@ -291,7 +280,7 @@ func (e *RbacRepository) AddRole(ctx context.Context, role *models.Role) error {
 			count(uid)
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -331,7 +320,7 @@ func (e *RbacRepository) AddRole(ctx context.Context, role *models.Role) error {
 	}
 
 	mu.SetJson = pb
-	result, err := e.dg.NewTxn().Mutate(ctx, mu)
+	result, err := db.DDB().Mutate(ctx, mu)
 	if err != nil {
 		return fmt.Errorf("dgraph Mutate error: %v", err)
 	}
@@ -350,7 +339,7 @@ func (e *RbacRepository) RemoveRole(ctx context.Context, role *models.Role) erro
 			uid
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -372,7 +361,7 @@ func (e *RbacRepository) RemoveRole(ctx context.Context, role *models.Role) erro
 	}
 
 	// mutate multiple items, then commit
-	txn := e.dg.NewTxn()
+	txn := db.DDB()
 	for _, uid := range r.UID {
 		d := map[string]string{"uid": uid.UID}
 		logger.Info(d)
@@ -408,7 +397,7 @@ func (e *RbacRepository) QueryRoleResources(ctx context.Context, resource *model
 			}
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -441,7 +430,7 @@ func (e *RbacRepository) LinkRoleResource(ctx context.Context, resource *models.
 			uid
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -473,7 +462,7 @@ func (e *RbacRepository) LinkRoleResource(ctx context.Context, resource *models.
 		ObjectId:  r.UID2[0].UID,
 	}
 	mu.Set = []*api.NQuad{nq}
-	_, err = e.dg.NewTxn().Mutate(ctx, mu)
+	_, err = db.DDB().Mutate(ctx, mu)
 	if err != nil {
 		return fmt.Errorf("LinkRoleResource Mutate error: %v", err)
 	}
@@ -495,7 +484,7 @@ func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, resource *model
 			uid
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -527,7 +516,7 @@ func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, resource *model
 		ObjectId:  r.UID2[0].UID,
 	}
 	mu.Del = []*api.NQuad{nq}
-	_, err = e.dg.NewTxn().Mutate(ctx, mu)
+	_, err = db.DDB().Mutate(ctx, mu)
 	if err != nil {
 		return fmt.Errorf("UnlinkRoleResource Mutate error: %v", err)
 	}
@@ -546,7 +535,7 @@ func (e *RbacRepository) AddResource(ctx context.Context, resource *models.Resou
 			count(uid)
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -586,7 +575,7 @@ func (e *RbacRepository) AddResource(ctx context.Context, resource *models.Resou
 	}
 
 	mu.SetJson = pb
-	result, err := e.dg.NewTxn().Mutate(ctx, mu)
+	result, err := db.DDB().Mutate(ctx, mu)
 	if err != nil {
 		return fmt.Errorf("dgraph Mutate error: %v", err)
 	}
@@ -605,7 +594,7 @@ func (e *RbacRepository) RemoveResource(ctx context.Context, resource *models.Re
 			uid
 		}
 	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -627,7 +616,7 @@ func (e *RbacRepository) RemoveResource(ctx context.Context, resource *models.Re
 	}
 
 	// mutate multiple items, then commit
-	txn := e.dg.NewTxn()
+	txn := db.DDB()
 	for _, uid := range r.UID {
 		d := map[string]string{"uid": uid.UID}
 		logger.Info(d)

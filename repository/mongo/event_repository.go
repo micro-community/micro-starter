@@ -15,10 +15,6 @@ type EventRepository struct {
 	mu *sync.Mutex
 }
 
-func init() {
-	//EventDao = &EventRepository{db:mongodb.Client.Collection("event")}
-}
-
 func (e *EventRepository) Create(ctx context.Context, event models.Event) (interface{}, error) {
 
 	e.mu.Lock()

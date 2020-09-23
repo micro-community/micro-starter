@@ -5,50 +5,29 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/dgraph-io/dgo/v200"
 	"github.com/dgraph-io/dgo/v200/protos/api"
+	"github.com/micro-community/auth/db"
+	"github.com/micro-community/auth/models"
 	"github.com/micro/go-micro/v3/logger"
-
-	rbac "github.com/micro-community/auth/protos/rbac"
 )
 
-type UID struct {
-	UID string `json:"uid"`
+type RbacRepository struct {
 }
 
-type Rbac struct {
-	dg *dgo.Dgraph
+func NewRBACRepository() *RbacRepository {
+	return &RbacRepository{}
 }
-
-func NewRBACRepository(dg *dgo.Dgraph) *Rbac {
-	return &Rbac{
-		dg: dg,
-	}
-}
-
 
 // AddUser is a single request handler called via client.AddUser or the generated client code
-func (e *Rbac) AddUser(ctx context.Context, req *rbac.User, rsp *rbac.Response) error {
-	logger.Infof("Received Rbac.AddUser request, ID: %s, Name: %s", req.Id, req.Name)
-	// 首先查询数据库中是否已有该ID
-	variables := map[string]string{"$id1": req.Id}
-	q := `query Me($id1: string){
-		count(func: type(User)) @filter(eq(person.id, $id1)) {
-			count(uid)
-		}
-	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
+func (e *RbacRepository) AddUser(ctx context.Context, user *models.User) error {
+	logger.Infof("Received RbacRepository.AddUser request, ID: %d, Name: %s", user.ID, user.Name)
+	//首先查询数据库中是否已有该ID
+
+	drsp, err := db.DDB().QueryExist(user.ID)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
 
-	type Count struct {
-		Count int `json:"count"`
-	}
-
-	type Root struct {
-		Count []Count `json:"count"`
-	}
 	var r Root
 	err = json.Unmarshal(drsp.Json, &r)
 	if err != nil || len(r.Count) < 1 {
@@ -56,17 +35,17 @@ func (e *Rbac) AddUser(ctx context.Context, req *rbac.User, rsp *rbac.Response) 
 	}
 
 	if r.Count[0].Count > 0 {
-		return fmt.Errorf("User %s already exists", req.Id)
+		return fmt.Errorf("User %d already exists", user.ID)
 	}
 
 	// 创建新User
-	p := User{
-		Uid:    "_:" + req.Id,
+	p := models.User{
+		//Uid:    "_:" + target,
 		Type:   "User",
-		ID:     req.Id,
-		Name:   req.Name,
-		Age:    req.Age,
-		Gender: req.Gender,
+		ID:     user.ID,
+		Name:   user.Name,
+		Age:    user.Age,
+		Gender: user.Gender,
 	}
 
 	mu := &api.Mutation{
@@ -79,44 +58,25 @@ func (e *Rbac) AddUser(ctx context.Context, req *rbac.User, rsp *rbac.Response) 
 	}
 
 	mu.SetJson = pb
-	result, err := e.dg.NewTxn().Mutate(ctx, mu)
+	_, err = db.DDB().Mutate(pb)
 	if err != nil {
 		return fmt.Errorf("dgraph Mutate error: %v", err)
 	}
 
-	rsp.Msg = fmt.Sprintf("person created, id: %s,  uid: %s", req.Id, result.Uids[req.Id])
 	return nil
 }
 
 // RemoveUser is a single request handler called via client.RemoveUser or the generated client code
-func (e *Rbac) RemoveUser(ctx context.Context, req *rbac.Request, rsp *rbac.Response) error {
-	logger.Infof("Received Rbac.RemoveUser request, ID: %s", req.Id)
+func (e *RbacRepository) RemoveUser(ctx context.Context, user *models.User) error {
+	logger.Infof("Received RbacRepository.RemoveUser request, ID: %d", user.ID)
 	// 首先查询数据库中是否已有该ID
-	variables := map[string]string{"$id1": req.Id}
-	q := `query Me($id1: string){
-		find(func: type(User)) @filter(eq(person.id, $id1)) {
-			uid
-		}
-	}`
-	drsp, err := e.dg.NewTxn().QueryWithVars(ctx, q, variables)
-	if err != nil {
-		return fmt.Errorf("query err: %v", err)
-	}
-	logger.Info(string(drsp.Json))
 
-	type Root struct {
-		UID []UID `json:"find"`
-	}
-
+	drsp, err := db.DDB().QueryExist(user.ID)
+	
 	var r Root
 	err = json.Unmarshal(drsp.Json, &r)
 	if err != nil {
 		return fmt.Errorf("json unmarshal Root error: %v", err)
-	}
-
-	if len(r.UID) == 0 {
-		rsp.Msg = fmt.Sprintf("%s not exists", req.Id)
-		return nil
 	}
 
 	// mutate multiple items, then commit
@@ -140,13 +100,12 @@ func (e *Rbac) RemoveUser(ctx context.Context, req *rbac.Request, rsp *rbac.Resp
 	if err != nil {
 		return fmt.Errorf("RemoveUser commit error: %v", err)
 	}
-	rsp.Msg = "OK"
 	return nil
 }
 
 // QueryUserRoles is a single request handler called via client.QueryUserRoles or the generated client code
-func (e *Rbac) QueryUserRoles(ctx context.Context, req *rbac.Request, rsp *rbac.Roles) error {
-	logger.Infof("Received Rbac.QueryUserRoles request, ID: %s", req.Id)
+func (e *RbacRepository) QueryUserRoles(ctx context.Context, user *models.User) error {
+	logger.Infof("Received RbacRepository.QueryUserRoles request, ID: %s", user.ID)
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){
 		find(func: type(User)) @filter(eq(person.id, $id1)) @normalize {
@@ -171,14 +130,14 @@ func (e *Rbac) QueryUserRoles(ctx context.Context, req *rbac.Request, rsp *rbac.
 	}
 
 	for _, role := range r.Role {
-		rsp.Roles = append(rsp.Roles, &rbac.Role{Id: role.ID, Name: role.Name})
+		rsp.Roles = append(rsp.Roles, &models.Role{Id: role.ID, Name: role.Name})
 	}
 	return nil
 }
 
 // QueryUserResources is a single request handler called via client.QueryUserResources or the generated client code
-func (e *Rbac) QueryUserResources(ctx context.Context, req *rbac.Request, rsp *rbac.Resources) error {
-	logger.Infof("Received Rbac.QueryUserResources request, ID: %s", req.Id)
+func (e *RbacRepository) QueryUserResources(ctx context.Context, user *models.User) error {
+	logger.Infof("Received RbacRepository.QueryUserResources request, ID: %s", req.Id)
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){
 		find(func: type(User)) @filter(eq(person.id, $id1)) @normalize {
@@ -208,15 +167,15 @@ func (e *Rbac) QueryUserResources(ctx context.Context, req *rbac.Request, rsp *r
 	for _, res := range r.Resource {
 		if !seen[res.ID] {
 			seen[res.ID] = true
-			rsp.Resources = append(rsp.Resources, &rbac.Resource{Id: res.ID, Name: res.Name})
+			rsp.Resources = append(rsp.Resources, &models.Resource{Id: res.ID, Name: res.Name})
 		}
 	}
 	return nil
 }
 
 // LinkUserRole is a single request handler called via client.LinkUserRole or the generated client code
-func (e *Rbac) LinkUserRole(ctx context.Context, req *rbac.LinkRequest, rsp *rbac.Response) error {
-	logger.Info("Received Rbac.LinkUserRole request: id1: %s, id2: %s", req.Id1, req.Id2)
+func (e *RbacRepository) LinkUserRole(ctx context.Context, role *models.Role) error {
+	logger.Info("Received RbacRepository.LinkUserRole request: id1: %s, id2: %s", req.Id1, req.Id2)
 	// 首先查询id1 和 id2 对应的 uid
 	variables := map[string]string{"$id1": req.Id1, "$id2": req.Id2}
 	q := `query Me($id1: string, $id2: string){
@@ -269,8 +228,8 @@ func (e *Rbac) LinkUserRole(ctx context.Context, req *rbac.LinkRequest, rsp *rba
 }
 
 // UnlinkUserRole is a single request handler called via client.UnlinkUserRole or the generated client code
-func (e *Rbac) UnlinkUserRole(ctx context.Context, req *rbac.LinkRequest, rsp *rbac.Response) error {
-	logger.Info("Received Rbac.UnlinkUserRole request: id1: %s, id2: %s", req.Id1, req.Id2)
+func (e *RbacRepository) UnlinkUserRole(ctx context.Context, role *models.Role) error {
+	logger.Info("Received RbacRepository.UnlinkUserRole request: id1: %s, id2: %s", req.Id1, req.Id2)
 	// 首先查询id1 和 id2 对应的 uid
 	variables := map[string]string{"$id1": req.Id1, "$id2": req.Id2}
 	q := `query Me($id1: string, $id2: string){
@@ -323,8 +282,8 @@ func (e *Rbac) UnlinkUserRole(ctx context.Context, req *rbac.LinkRequest, rsp *r
 }
 
 // AddRole is a single request handler called via client.AddRole or the generated client code
-func (e *Rbac) AddRole(ctx context.Context, req *rbac.Role, rsp *rbac.Response) error {
-	logger.Infof("Received Rbac.AddRole request, ID: %s, Name: %s", req.Id, req.Name)
+func (e *RbacRepository) AddRole(ctx context.Context, role *models.Role) error {
+	logger.Infof("Received RbacRepository.AddRole request, ID: %s, Name: %s", req.Id, req.Name)
 	// 首先查询数据库中是否已有该ID
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){
@@ -382,8 +341,8 @@ func (e *Rbac) AddRole(ctx context.Context, req *rbac.Role, rsp *rbac.Response) 
 }
 
 // RemoveRole is a single request handler called via client.RemoveRole or the generated client code
-func (e *Rbac) RemoveRole(ctx context.Context, req *rbac.Request, rsp *rbac.Response) error {
-	logger.Infof("Received Rbac.RemoveRole request, ID: %s", req.Id)
+func (e *RbacRepository) RemoveRole(ctx context.Context, role *models.Role) error {
+	logger.Infof("Received RbacRepository.RemoveRole request, ID: %s", req.Id)
 	// 首先查询数据库中是否已有该ID
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){
@@ -438,8 +397,8 @@ func (e *Rbac) RemoveRole(ctx context.Context, req *rbac.Request, rsp *rbac.Resp
 }
 
 // QueryRoleResources is a single request handler called via client.QueryRoleResources or the generated client code
-func (e *Rbac) QueryRoleResources(ctx context.Context, req *rbac.Request, rsp *rbac.Resources) error {
-	logger.Infof("Received Rbac.QueryRoleResources request, ID: %s", req.Id)
+func (e *RbacRepository) QueryRoleResources(ctx context.Context, resource *models.Resource) error {
+	logger.Infof("Received RbacRepository.QueryRoleResources request, ID: %s", req.Id)
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){
 		find(func: type(Role)) @filter(eq(role.id, $id1)) @normalize {
@@ -464,14 +423,14 @@ func (e *Rbac) QueryRoleResources(ctx context.Context, req *rbac.Request, rsp *r
 	}
 
 	for _, res := range r.Resource {
-		rsp.Resources = append(rsp.Resources, &rbac.Resource{Id: res.ID, Name: res.Name})
+		rsp.Resources = append(rsp.Resources, &models.Resource{Id: res.ID, Name: res.Name})
 	}
 	return nil
 }
 
 // LinkRoleResource is a single request handler called via client.LinkRoleResource or the generated client code
-func (e *Rbac) LinkRoleResource(ctx context.Context, req *rbac.LinkRequest, rsp *rbac.Response) error {
-	logger.Info("Received Rbac.LinkRoleResource request: id1: %s, id2: %s", req.Id1, req.Id2)
+func (e *RbacRepository) LinkRoleResource(ctx context.Context, resource *models.Resource) error {
+	logger.Info("Received RbacRepository.LinkRoleResource request: id1: %s, id2: %s", req.Id1, req.Id2)
 	// 首先查询id1 和 id2 对应的 uid
 	variables := map[string]string{"$id1": req.Id1, "$id2": req.Id2}
 	q := `query Me($id1: string, $id2: string){
@@ -524,8 +483,8 @@ func (e *Rbac) LinkRoleResource(ctx context.Context, req *rbac.LinkRequest, rsp 
 }
 
 // UnlinkRoleResource is a single request handler called via client.UnlinkRoleResource or the generated client code
-func (e *Rbac) UnlinkRoleResource(ctx context.Context, req *rbac.LinkRequest, rsp *rbac.Response) error {
-	logger.Info("Received Rbac.UnlinkRoleResource request: id1: %s, id2: %s", req.Id1, req.Id2)
+func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, resource *models.Resource) error {
+	logger.Info("Received RbacRepository.UnlinkRoleResource request: id1: %s, id2: %s", req.Id1, req.Id2)
 	// 首先查询id1 和 id2 对应的 uid
 	variables := map[string]string{"$id1": req.Id1, "$id2": req.Id2}
 	q := `query Me($id1: string, $id2: string){
@@ -578,8 +537,8 @@ func (e *Rbac) UnlinkRoleResource(ctx context.Context, req *rbac.LinkRequest, rs
 }
 
 // AddResource is a single request handler called via client.AddResource or the generated client code
-func (e *Rbac) AddResource(ctx context.Context, req *rbac.Resource, rsp *rbac.Response) error {
-	logger.Infof("Received Rbac.AddResource request, ID: %s, Name: %s", req.Id, req.Name)
+func (e *RbacRepository) AddResource(ctx context.Context, resource *models.Resource) error {
+	logger.Infof("Received RbacRepository.AddResource request, ID: %s, Name: %s", req.Id, req.Name)
 	// 首先查询数据库中是否已有该ID
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){
@@ -637,8 +596,8 @@ func (e *Rbac) AddResource(ctx context.Context, req *rbac.Resource, rsp *rbac.Re
 }
 
 // RemoveResource is a single request handler called via client.RemoveResource or the generated client code
-func (e *Rbac) RemoveResource(ctx context.Context, req *rbac.Request, rsp *rbac.Response) error {
-	logger.Infof("Received Rbac.RemoveResource request, ID: %s", req.Id)
+func (e *RbacRepository) RemoveResource(ctx context.Context, resource *models.Resource) error {
+	logger.Infof("Received RbacRepository.RemoveResource request, ID: %s", req.Id)
 	// 首先查询数据库中是否已有该ID
 	variables := map[string]string{"$id1": req.Id}
 	q := `query Me($id1: string){

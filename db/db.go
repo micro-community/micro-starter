@@ -5,14 +5,18 @@ import (
 
 	"github.com/micro-community/auth/cache"
 	"github.com/micro-community/auth/config"
+	"github.com/micro-community/auth/db/nosql"
 	"github.com/micro-community/auth/db/sql"
 	"github.com/micro/go-micro/v3/logger"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
 var (
 	cacheCli      *cache.Client
-	db            *gorm.DB
+	db            *gorm.DB    // for mysql/sqlite
+	dg            *nosql.DormDB //for dgraph
+	mdb           *mongo.Database
 	once          sync.Once
 	dbContextType string
 )
@@ -39,6 +43,21 @@ func BuildDBContext(dbCase string) {
 		//use memory to mock
 
 	}
+
+}
+
+func DDB() *nosql.DormDB  {
+
+	if dg != nil {
+		return dg
+	}
+
+	dg = nosql.NewDGraphClient(config.Cfg.Dgraph)
+	once.Do(func() {
+		migrate()
+	})
+
+	return dg
 
 }
 

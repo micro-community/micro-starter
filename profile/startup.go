@@ -2,7 +2,7 @@
  * @Author: Edward https://github.com/crazybber
  * @Date: 2020-09-21 17:37:45
  * @Last Modified by: Eamon
- * @Last Modified time: 2020-09-22 22:34:43
+ * @Last Modified time: 2020-09-22 23:18:16
  * @Description:  All Service Instance will be created
  */
 
@@ -35,8 +35,8 @@ func BuildingStartupService(srv *mservice.Service) {
 
 	c := dig.New()
 
-	//db context
-	buildDBContext(c)
+	//data(database/cache) context
+	buildDataContext(c)
 
 	//service : aggregate repository service and logic proc to provide service ability for handler
 	c.Provide(service.NewUser)
@@ -62,8 +62,10 @@ func BuildingStartupService(srv *mservice.Service) {
 
 }
 
-func buildDBContext(c *dig.Container) {
+func buildDataContext(c *dig.Container) {
+
 	db.BuildDBContext(config.Cfg.DBType)
+
 	switch config.Cfg.DBType {
 	case "dgraph":
 		c.Provide(dgraph.NewRBACRepository)

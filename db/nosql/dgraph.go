@@ -22,71 +22,53 @@ type DgraphCfg struct {
 	Url      string
 }
 
-var (
-	dg             *dgo.Dgraph
-	dgraphConnHost = "127.0.0.1:9080"
-)
+type DormDB struct {
+	dg *dgo.Dgraph
+}
 
-func newDGraphClient() *dgo.Dgraph {
+func NewDGraphClient(cfg *DgraphCfg) *DormDB {
 
 	dialOpts := append([]grpc.DialOption{},
 		grpc.WithInsecure(),
 		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)))
-
-	conn, err := grpc.Dial(dgraphConnHost, dialOpts...)
+	conn, err := grpc.Dial(cfg.Url, dialOpts...)
 	if err != nil {
 		logger.Fatal("While trying to dial gRPC")
 	}
 
-	return dgo.NewDgraphClient(
+	dClient := dgo.NewDgraphClient(
 		api.NewDgraphClient(conn),
 	)
+
+	return &DormDB{dg: dClient}
 }
 
-func QueryReadOnly(q string) (*api.Response, error) {
-
-	if dg == nil {
-		dg = newDGraphClient()
-	}
-	return dg.NewReadOnlyTxn().Query(context.Background(), q)
+func (d *DormDB) txn() *dgo.Txn {
+	return d.dg.NewTxn()
 }
 
-func Query(q string) (*api.Response, error) {
-
-	if dg == nil {
-		dg = newDGraphClient()
-	}
-	return dg.NewTxn().Query(context.Background(), q)
+func (d *DormDB) QueryReadOnly(q string) (*api.Response, error) {
+	return d.dg.NewReadOnlyTxn().Query(context.Background(), q)
 }
 
-//QueryWithVar is under writing
-func QueryWithVar(typestruct interface{}, target, queryString string) (*api.Response, error) {
+func (d *DormDB) Query(q string) (*api.Response, error) {
+	return d.txn().Query(context.Background(), q)
+}
 
-	if dg == nil {
-		dg = newDGraphClient()
-	}
+//QueryExist is under writing
+func (d *DormDB) QueryExist(targetID int64) (*api.Response, error) {
 
-	mu := &api.Mutation{
-		CommitNow: true,
-	}
-	pb, err := json.Marshal(typestruct)
-	if err != nil {
-		logger.Fatal(err)
-	}
+	queryString := `query Me($id1: string){
+		find(func: type(User)) @filter(eq(person.id, $id1)) {
+			uid
+		}
+	}`
 
-	mu.SetJson = pb
-
-	ctx := context.Background()
-
-	assigned, err := dg.NewTxn().Mutate(ctx, mu)
-	if err != nil {
-		logger.Fatal(err)
-	}
-
+	target := fmt.Sprintf("%d", targetID)
 	// Assigned uids for nodes which were created would be returned in the resp.AssignedUids map.
-	variables := map[string]string{"$id": assigned.Uids[target]}
+	variables := map[string]string{"$id1": target}
 
-	resp, err := dg.NewTxn().QueryWithVars(ctx, queryString, variables)
+	resp, err := d.txn().QueryWithVars(context.Background(), queryString, variables)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -95,23 +77,50 @@ func QueryWithVar(typestruct interface{}, target, queryString string) (*api.Resp
 
 }
 
-func Mutate(b []byte) (*api.Response, error) {
-	if dg == nil {
-		dg = newDGraphClient()
+//QueryWithVar  ..
+func (d *DormDB) QueryWithVar(targetID, queryString string) (*api.Response, error) {
+
+	// Assigned uids for nodes which were created would be returned in the resp.AssignedUids map.
+	variables := map[string]string{"$id": targetID}
+
+	resp, err := d.txn().QueryWithVars(context.Background(), queryString, variables)
+	if err != nil {
+		logger.Fatal(err)
 	}
+
+	return resp, err
+
+}
+
+//MutateObject is under writing
+func (d *DormDB) MutateObject(typestruct interface{}, target, queryString string) (*api.Response, error) {
+
+	pb, err := json.Marshal(typestruct)
+	if err != nil {
+		logger.Errorf("json Marshal error: %v", err)
+	}
+	return d.Mutate(pb)
+	// 	if err != nil {
+	// 		logger.Fatalf("dgraph Mutate error: %v", err)
+	// 	}
+}
+
+func (d *DormDB) Mutate(b []byte) (*api.Response, error) {
 
 	mu := &api.Mutation{
 		CommitNow: true,
 	}
 
 	mu.SetJson = b
-	return dg.NewTxn().Mutate(context.Background(), mu)
+	return d.txn().Mutate(context.Background(), mu)
 }
 
-func Delete(b []byte) error {
-	if dg == nil {
-		dg = newDGraphClient()
-	}
+func (d *DormDB) BatchDelete(uids []string) error {
+
+	
+}
+
+func (d *DormDB) Delete(b []byte) error {
 
 	fmt.Println(string(b))
 
@@ -119,30 +128,26 @@ func Delete(b []byte) error {
 		CommitNow:  true,
 		DeleteJson: b,
 	}
-	resp, err := dg.NewTxn().Mutate(context.Background(), mu)
+	resp, err := d.txn().Mutate(context.Background(), mu)
 
 	fmt.Println(string(resp.Json))
 
 	return err
 }
 
-func Update(set string) error {
-	if dg == nil {
-		dg = newDGraphClient()
-	}
+func (d *DormDB) Update(set string) error {
+
 	mu := &api.Mutation{
 		CommitNow: true,
 		SetNquads: []byte(set),
 	}
-	_, err := dg.NewTxn().Mutate(context.Background(), mu)
+	_, err := d.txn().Mutate(context.Background(), mu)
 	//fmt.Println(string(resp.Json))
 	return err
 }
 
-func UpdateWithQuery(query, set string) error {
-	if dg == nil {
-		dg = newDGraphClient()
-	}
+func (d *DormDB) UpdateWithQuery(query, set string) error {
+
 	mu := &api.Mutation{
 		CommitNow: true,
 	}
@@ -152,7 +157,7 @@ func UpdateWithQuery(query, set string) error {
 
 	mu.SetNquads = []byte(set)
 	req.Mutations = []*api.Mutation{mu}
-	resp, err := dg.NewTxn().Do(context.Background(), req)
+	resp, err := d.txn().Do(context.Background(), req)
 
 	fmt.Println(string(resp.Json))
 

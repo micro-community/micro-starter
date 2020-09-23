@@ -30,3 +30,4 @@ Dgraph:
   Host: "localhost"
   Port: 0
   DBName: "auth"
+  Url: "127.0.0.1:9080"

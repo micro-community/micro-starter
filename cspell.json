@@ -45,6 +45,7 @@
         "rbac",
         "redigo",
         "rediscli",
+        "roleid",
         "sqlite",
         "svcs",
         "Uids",

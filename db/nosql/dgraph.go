@@ -55,30 +55,19 @@ func (d *DormDB) Query(q string) (*api.Response, error) {
 	return d.txn().Query(context.Background(), q)
 }
 
-//QueryExist is under writing
-func (d *DormDB) QueryExist(targetID int64) (*api.Response, error) {
-
-	queryString := `query Me($id1: string){
-		find(func: type(User)) @filter(eq(person.id, $id1)) {
-			uid
-		}
-	}`
-
-	target := fmt.Sprintf("%d", targetID)
+//Query2ID  ..
+func (d *DormDB) Query2ID(id1, id2, queryString string) (*api.Response, error) {
 	// Assigned uids for nodes which were created would be returned in the resp.AssignedUids map.
-	variables := map[string]string{"$id1": target}
-
+	variables := map[string]string{"$id1": id2, "$id2": id2}
 	resp, err := d.txn().QueryWithVars(context.Background(), queryString, variables)
 	if err != nil {
 		logger.Fatal(err)
 	}
-
 	return resp, err
-
 }
 
-//QueryWithID  ..
-func (d *DormDB) QueryWithID(targetID, queryString string) (*api.Response, error) {
+//QueryID  ..
+func (d *DormDB) QueryID(targetID, queryString string) (*api.Response, error) {
 	// Assigned uids for nodes which were created would be returned in the resp.AssignedUids map.
 	variables := map[string]string{"$id": targetID}
 	resp, err := d.txn().QueryWithVars(context.Background(), queryString, variables)
@@ -106,7 +95,7 @@ func (d *DormDB) QueryWithVar(targetID, queryString string) (*api.Response, erro
 }
 
 //MutateObject is under writing
-func (d *DormDB) MutateObject(typestruct interface{}, target, queryString string) (*api.Response, error) {
+func (d *DormDB) MutateObject(typestruct interface{}) (*api.Response, error) {
 
 	pb, err := json.Marshal(typestruct)
 	if err != nil {
@@ -116,6 +105,27 @@ func (d *DormDB) MutateObject(typestruct interface{}, target, queryString string
 	// 	if err != nil {
 	// 		logger.Fatalf("dgraph Mutate error: %v", err)
 	// 	}
+}
+
+func (d *DormDB) UpdateRelationShip(subject, predicate, object string, isSetRelationShip bool) (*api.Response, error) {
+
+	mu := &api.Mutation{
+		CommitNow: true,
+	}
+
+	nq := &api.NQuad{
+		Subject:   subject,
+		Predicate: predicate,
+		ObjectId:  object,
+	}
+
+	if isSetRelationShip {
+		mu.Set = []*api.NQuad{nq}
+	} else {
+		mu.Del = []*api.NQuad{nq}
+	}
+
+	return d.txn().Mutate(context.Background(), mu)
 }
 
 func (d *DormDB) Mutate(b []byte) (*api.Response, error) {

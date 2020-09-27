@@ -61,12 +61,13 @@ func (d *DormDB) Query2ID(id1, id2, queryString string) (*api.Response, error) {
 	variables := map[string]string{"$id1": id2, "$id2": id2}
 	resp, err := d.txn().QueryWithVars(context.Background(), queryString, variables)
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatal("query id1: %s id2: %s with error ",id1,id2,err)
 	}
+
 	return resp, err
 }
 
-//QueryID  ..
+//QueryID  to query a id..
 func (d *DormDB) QueryID(targetID, queryString string) (*api.Response, error) {
 	// Assigned uids for nodes which were created would be returned in the resp.AssignedUids map.
 	variables := map[string]string{"$id": targetID}

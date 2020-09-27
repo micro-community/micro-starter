@@ -281,7 +281,7 @@ func (e *RbacRepository) QueryRoleExist(targetID int) ([]string, error) {
 	//variables := map[string]string{"$id1": target}
 	rsp, err := db.DDB().QueryID(target, queryString)
 	if err != nil {
-		return nil,fmt.Errorf("query role err: %v", err)
+		return nil, fmt.Errorf("query role err: %v", err)
 	}
 	type Root struct {
 		UID []models.UID `json:"role"`
@@ -290,22 +290,22 @@ func (e *RbacRepository) QueryRoleExist(targetID int) ([]string, error) {
 
 	err = json.Unmarshal(rsp.Json, &r)
 	if err != nil {
-		return nil,fmt.Errorf("json unmarshal drsp error: %v", err)
+		return nil, fmt.Errorf("json unmarshal drsp error: %v", err)
 	}
 	if len(r.UID) > 0 {
-		return nil,fmt.Errorf("Role %d already exists", targetID)
+		return nil, fmt.Errorf("Role %d already exists", targetID)
 	}
 	var resultUIDs []string
 	for _, uid := range r.UID {
-		resultUIDs = append(resultUIDs,uid.UID)
+		resultUIDs = append(resultUIDs, uid.UID)
 	}
-	return resultUIDs,nil
+	return resultUIDs, nil
 }
 
 // AddRole is a single request handler called via client.AddRole or the generated client code
 func (e *RbacRepository) AddRole(ctx context.Context, role *models.Role) error {
 	logger.Infof("Received RbacRepository.AddRole request, ID: %d, Name: %d", role.ID, role.Name)
-	 _,err := e.QueryRoleExist(role.ID)
+	_, err := e.QueryRoleExist(role.ID)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -331,7 +331,7 @@ func (e *RbacRepository) RemoveRole(ctx context.Context, role *models.Role) erro
 
 	logger.Infof("Received RbacRepository.RemoveRole request, ID: %d", role.ID)
 	// 首先查询数据库中是否已有该ID
-	uids,err := e.QueryRoleExist(role.ID)
+	uids, err := e.QueryRoleExist(role.ID)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -341,7 +341,7 @@ func (e *RbacRepository) RemoveRole(ctx context.Context, role *models.Role) erro
 }
 
 // QueryRoleResources is a single request handler called via client.QueryRoleResources or the generated client code
-func (e *RbacRepository) QueryRoleResources(ctx context.Context, role *models.Role, resource *models.Resource) error {
+func (e *RbacRepository) QueryRoleResources(ctx context.Context, role *models.Role, resource *models.Resource) ([]*models.Resource, error) {
 	logger.Infof("Received RbacRepository.QueryRoleResources request, ID: %s", resource.ID)
 
 	roleID := fmt.Sprintf("%d", role.ID)
@@ -357,7 +357,7 @@ func (e *RbacRepository) QueryRoleResources(ctx context.Context, role *models.Ro
 	drsp, err := db.DDB().QueryWithVar(roleID, q)
 	//	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
-		return fmt.Errorf("query err: %v", err)
+		return nil, fmt.Errorf("query err: %v", err)
 	}
 	type Root struct {
 		Resource []models.Resource `json:"find"`
@@ -366,36 +366,41 @@ func (e *RbacRepository) QueryRoleResources(ctx context.Context, role *models.Ro
 	var r Root
 	err = json.Unmarshal(drsp.Json, &r)
 	if err != nil {
-		return fmt.Errorf("json unmarshal Root error: %v", err)
+		return nil, fmt.Errorf("json unmarshal Root error: %v", err)
 	}
 
+	var resResource []*models.Resource
+
 	for _, res := range r.Resource {
-		//	rsp.Resources = append(rsp.Resources, &models.Resource{Id: res.ID, Name: res.Name})
+		resResource = append(resResource, &models.Resource{ID: res.ID, Name: res.Name})
 	}
-	return nil
+	return resResource, nil
 }
 
 // LinkRoleResource is a single request handler called via client.LinkRoleResource or the generated client code
-func (e *RbacRepository) LinkRoleResource(ctx context.Context,role *models.Role, resource *models.Resource) error {
-	logger.Info("Received RbacRepository.LinkRoleResource request: id1: %d, id2: %d", role.ID, role.ID)
+func (e *RbacRepository) LinkRoleResource(ctx context.Context, role *models.Role, resource *models.Resource) error {
+	logger.Info("Received RbacRepository.LinkRoleResource request: id1: %d, id2: %d", role.ID, resource.ID)
 	// 首先查询id1 和 id2 对应的 uid
 
-	variables := map[string]string{"$id1": role.ID, "$id2": req.ID}
+	roleid := fmt.Sprintf("%d", role.ID)
+	resourceid := fmt.Sprintf("%d", resource.ID)
+	//	variables := map[string]string{"$id1": role.ID, "$id2": req.ID}
+
 	q := `query Me($id1: string, $id2: string){
-		find_id1(func: type(Role)) @filter(eq(role.id, $id1)) {
+		roles(func: type(Role)) @filter(eq(role.id, $id1)) {
 			uid
 		}
-		find_id2(func: type(Resource)) @filter(eq(resource.id, $id2)) {
+		resources(func: type(Resource)) @filter(eq(resource.id, $id2)) {
 			uid
 		}
 	}`
-	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
+	drsp, err := db.DDB().Query2ID(roleid, resourceid, q)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
 	type Root struct {
-		UID1 []UID `json:"find_id1"`
-		UID2 []UID `json:"find_id2"`
+		UID1 []models.UID `json:"roles"`
+		UID2 []UID        `json:"resources"`
 	}
 
 	var r Root
@@ -404,37 +409,30 @@ func (e *RbacRepository) LinkRoleResource(ctx context.Context,role *models.Role,
 		return fmt.Errorf("json unmarshal Root error: %v", err)
 	}
 	if len(r.UID1) == 0 {
-		return fmt.Errorf("id1 <%s> not found", req.Id1)
+		return fmt.Errorf("id1 <%s> not found", roleid)
 	}
 	if len(r.UID2) == 0 {
-		return fmt.Errorf("id2 <%s> not found", req.Id2)
+		return fmt.Errorf("id2 <%s> not found", resourceid)
 	}
 
-	// link
-	mu := &api.Mutation{
-		CommitNow: true,
-	}
-
-	nq := &api.NQuad{
-		Subject:   r.UID1[0].UID,
-		Predicate: "resource",
-		ObjectId:  r.UID2[0].UID,
-	}
-	mu.Set = []*api.NQuad{nq}
-	_, err = db.DDB().Mutate(ctx, mu)
+	_, err = db.DDB().UpdateRelationShip(r.UID1[0].UID, "resource", r.UID2[0].UID, true)
 	if err != nil {
 		return fmt.Errorf("LinkRoleResource Mutate error: %v", err)
 	}
 
-	rsp.Msg = "OK"
+	//rsp.Msg = "OK"
 	return nil
 }
 
 // UnlinkRoleResource is a single request handler called via client.UnlinkRoleResource or the generated client code
-func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, resource *models.Resource) error {
-	logger.Info("Received RbacRepository.UnlinkRoleResource request: id1: %s, id2: %s", req.Id1, req.Id2)
+func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, role *models.Role, resource *models.Resource) error {
+	logger.Info("Received RbacRepository.UnlinkRoleResource request: id1: %d, id2: %d", role.ID, resource.ID)
 	// 首先查询id1 和 id2 对应的 uid
-	variables := map[string]string{"$id1": req.Id1, "$id2": req.Id2}
+
+	roleid := fmt.Sprintf("%d", role.ID)
+	resourceid := fmt.Sprintf("%d", resource.ID)
+
+	//variables := map[string]string{"$id1": roleid, "$id2": resourceid}
 	q := `query Me($id1: string, $id2: string){
 		find_id1(func: type(Role)) @filter(eq(role.id, $id1)) {
 			uid
@@ -443,7 +441,8 @@ func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, resource *model
 			uid
 		}
 	}`
-	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
+
+	drsp, err := db.DDB().Query2ID(roleid, resourceid, q)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -458,34 +457,23 @@ func (e *RbacRepository) UnlinkRoleResource(ctx context.Context, resource *model
 		return fmt.Errorf("json unmarshal Root error: %v", err)
 	}
 	if len(r.UID1) == 0 {
-		return fmt.Errorf("id1 <%s> not found", req.Id1)
+		return fmt.Errorf("id1 <%s> not found", roleid)
 	}
 	if len(r.UID2) == 0 {
-		return fmt.Errorf("id2 <%s> not found", req.Id2)
+		return fmt.Errorf("id2 <%s> not found", resourceid)
 	}
 
-	// unlink
-	mu := &api.Mutation{
-		CommitNow: true,
-	}
-
-	nq := &api.NQuad{
-		Subject:   r.UID1[0].UID,
-		Predicate: "resource",
-		ObjectId:  r.UID2[0].UID,
-	}
-	mu.Del = []*api.NQuad{nq}
-	_, err = db.DDB().Mutate(ctx, mu)
+	_, err = db.DDB().UpdateRelationShip(r.UID1[0].UID, "resource", r.UID2[0].UID, false)
 	if err != nil {
 		return fmt.Errorf("UnlinkRoleResource Mutate error: %v", err)
 	}
 
-	rsp.Msg = "OK"
+	//rsp.Msg = "OK"
 	return nil
 }
 
-//QueryResource check resource
-func (e *RbacRepository) QueryResource(targetID int64) (*api.Response, error) {
+//QueryResourceExist check resource
+func (e *RbacRepository) QueryResourceExist(targetID int) ([]string, error) {
 	queryString := `query Me($id1: string){
 		count(func: type(Resource)) @filter(eq(resource.id, $id1)) {
 			count(uid)
@@ -498,118 +486,56 @@ func (e *RbacRepository) QueryResource(targetID int64) (*api.Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("query role err: %v", err)
 	}
-	return rsp, nil
+
+	var r Root
+	err = json.Unmarshal(rsp.Json, &r)
+	if err != nil || len(r.Count) < 1 {
+		return nil, fmt.Errorf("json unmarshal drsp error: %v", err)
+	}
+	if r.Count[0].Count > 0 {
+		return nil, fmt.Errorf("Resource %s already exists", target)
+	}
+	return r.UID, nil
 
 }
 
 // AddResource is a single request handler called via client.AddResource or the generated client code
 func (e *RbacRepository) AddResource(ctx context.Context, resource *models.Resource) error {
-	logger.Infof("Received RbacRepository.AddResource request, ID: %s, Name: %s", req.Id, req.Name)
+	logger.Infof("Received RbacRepository.AddResource request, ID: %d, Name: %s", resource.ID, resource.Name)
+
 	// 首先查询数据库中是否已有该ID
-	variables := map[string]string{"$id1": req.Id}
-	q := `query Me($id1: string){
-		count(func: type(Resource)) @filter(eq(resource.id, $id1)) {
-			count(uid)
-		}
-	}`
-	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
+
+	ids, err := e.QueryResourceExist(resource.ID)
+
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
-
-	type Count struct {
-		Count int `json:"count"`
-	}
-
-	type Root struct {
-		Count []Count `json:"count"`
-	}
-	var r Root
-	err = json.Unmarshal(drsp.Json, &r)
-	if err != nil || len(r.Count) < 1 {
-		return fmt.Errorf("json unmarshal drsp error: %v", err)
-	}
-
-	if r.Count[0].Count > 0 {
-		return fmt.Errorf("Resource %s already exists", req.Id)
-	}
-
 	// 创建新Resource
-	res := Resource{
-		Uid:  "_:" + req.Id,
-		Type: "Resource",
-		ID:   req.Id,
-		Name: req.Name,
+	res := models.Resource{
+		Uid: "_:" + ids[0],
+		//	Type: "Resource",
+		ID:   resource.ID,
+		Name: resource.Name,
 	}
-
-	mu := &api.Mutation{
-		CommitNow: true,
-	}
-	pb, err := json.Marshal(res)
-	if err != nil {
-		logger.Fatal(err)
-		return fmt.Errorf("json Marshal error: %v", err)
-	}
-
-	mu.SetJson = pb
-	result, err := db.DDB().Mutate(ctx, mu)
+	_, err = db.DDB().MutateObject(res)
 	if err != nil {
 		return fmt.Errorf("dgraph Mutate error: %v", err)
 	}
 
-	rsp.Msg = fmt.Sprintf("resource created, id: %s,  uid: %s", req.Id, result.Uids[req.Id])
 	return nil
 }
 
 // RemoveResource is a single request handler called via client.RemoveResource or the generated client code
 func (e *RbacRepository) RemoveResource(ctx context.Context, resource *models.Resource) error {
-	logger.Infof("Received RbacRepository.RemoveResource request, ID: %s", req.Id)
+	logger.Infof("Received RbacRepository.RemoveResource request, ID: %d", resource.ID)
 	// 首先查询数据库中是否已有该ID
-	variables := map[string]string{"$id1": req.Id}
-	q := `query Me($id1: string){
-		find(func: type(Resource)) @filter(eq(resource.id, $id1)) {
-			uid
-		}
-	}`
-	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
+
+	ids, err := e.QueryResourceExist(resource.ID)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
-	logger.Info(string(drsp.Json))
 
-	type Root struct {
-		UID []UID `json:"find"`
-	}
-
-	var r Root
-	err = json.Unmarshal(drsp.Json, &r)
-	if err != nil {
-		return fmt.Errorf("json unmarshal drsp error: %v", err)
-	}
-
-	if len(r.UID) == 0 {
-		rsp.Msg = fmt.Sprintf("%s not exists", req.Id)
-		return nil
-	}
-
-	// mutate multiple items, then commit
-	txn := db.DDB()
-	for _, uid := range r.UID {
-		d := map[string]string{"uid": uid.UID}
-		logger.Info(d)
-		pb, err := json.Marshal(d)
-		if err != nil {
-			return err
-		}
-		mu := &api.Mutation{
-			DeleteJson: pb,
-		}
-		drsp, err = txn.Mutate(ctx, mu)
-		if err != nil {
-			return fmt.Errorf("txn Mutate error: %v", err)
-		}
-	}
-	err = txn.Commit(ctx)
+	err = db.DDB().BatchDelete(ids)
 	if err != nil {
 		return fmt.Errorf("RemoveResource commit error: %v", err)
 	}

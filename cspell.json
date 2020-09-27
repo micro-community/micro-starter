@@ -50,6 +50,7 @@
         "svcs",
         "Uids",
         "urfave",
+        "resourceid",
         "Warnf",
         "Warningf",
         "Warnln",

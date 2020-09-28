@@ -8,7 +8,7 @@ Redis:
     - localhost1
     - localhost2
     - localhost3
-  Host: "localhost"
+  Host: "redis://127.0.0.1:6379"
   Password: "12345"
   MaxIdle: 1
   MaxIdleTimeout: 1

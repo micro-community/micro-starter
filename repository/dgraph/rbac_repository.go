@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/dgraph-io/dgo/v200/protos/api"
 	"github.com/micro-community/auth/db"
 	"github.com/micro-community/auth/models"
 	"github.com/micro/go-micro/v3/logger"
@@ -19,7 +18,7 @@ func NewRBACRepository() *RbacRepository {
 }
 
 //QueryUserExist check user
-func (e *RbacRepository) QueryUserExist(targetID int64) (*api.Response, error) {
+func (e *RbacRepository) QueryUserExist(targetID int64) ([]string, error) {
 	queryString := `query Me($id1: string){
 		find(func: type(User)) @filter(eq(person.id, $id1)) {
 			uid
@@ -32,33 +31,31 @@ func (e *RbacRepository) QueryUserExist(targetID int64) (*api.Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("query role err: %v", err)
 	}
-	return rsp, nil
 
+	var r Root
+	err = json.Unmarshal(rsp.Json, &r)
+	if err != nil || len(r.Count) < 1 {
+		return nil, fmt.Errorf("json unmarshal drsp error: %v", err)
+	}
+	if r.Count[0].Count > 0 {
+		return nil, fmt.Errorf("User %s already exists", target)
+	}
+
+	return r.UID, nil
 }
 
 // AddUser is a single request handler called via client.AddUser or the generated client code
 func (e *RbacRepository) AddUser(ctx context.Context, user *models.User) error {
 	logger.Infof("Received RbacRepository.AddUser request, ID: %d, Name: %s", user.ID, user.Name)
 	//首先查询数据库中是否已有该ID
-
-	drsp, err := e.QueryUserExist(user.ID)
+	ids, err := e.QueryUserExist(user.ID)
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
 
-	var r Root
-	err = json.Unmarshal(drsp.Json, &r)
-	if err != nil || len(r.Count) < 1 {
-		return fmt.Errorf("json unmarshal drsp error: %v", err)
-	}
-
-	if r.Count[0].Count > 0 {
-		return fmt.Errorf("User %d already exists", user.ID)
-	}
-
 	// 创建新User
 	p := models.User{
-		//Uid:    "_:" + target,
+		Uid:    "_:" + ids[0],
 		Type:   "User",
 		ID:     user.ID,
 		Name:   user.Name,
@@ -66,21 +63,10 @@ func (e *RbacRepository) AddUser(ctx context.Context, user *models.User) error {
 		Gender: user.Gender,
 	}
 
-	mu := &api.Mutation{
-		CommitNow: true,
-	}
-	pb, err := json.Marshal(p)
-	if err != nil {
-		logger.Fatal(err)
-		return fmt.Errorf("json Marshal error: %v", err)
-	}
-
-	mu.SetJson = pb
-	_, err = db.DDB().Mutate(pb)
+	_, err = db.DDB().MutateObject(p)
 	if err != nil {
 		return fmt.Errorf("dgraph Mutate error: %v", err)
 	}
-
 	return nil
 }
 
@@ -89,14 +75,9 @@ func (e *RbacRepository) RemoveUser(ctx context.Context, user *models.User) erro
 	logger.Infof("Received RbacRepository.RemoveUser request, ID: %d", user.ID)
 	// 首先查询数据库中是否已有该ID
 
-	drsp, err := e.QueryUserExist(user.ID)
+	ids, err := e.QueryUserExist(user.ID)
 
-	var r Root
-	err = json.Unmarshal(drsp.Json, &r)
-	if err != nil {
-		return fmt.Errorf("json unmarshal Root error: %v", err)
-	}
-	err = db.DDB().BatchDelete(r.UID)
+	err = db.DDB().BatchDelete(ids)
 	if err != nil {
 		return fmt.Errorf("RemoveUser commit error: %v", err)
 	}
@@ -118,7 +99,7 @@ func (e *RbacRepository) QueryUserRoles(ctx context.Context, role *models.Role) 
 		}
 	}`
 
-	drsp, err := db.DDB().QueryWithVar(targetID, q)
+	drsp, err := db.DDB().QueryID(targetID, q)
 	if err != nil {
 		return nil, fmt.Errorf("query user role err: %v", err)
 	}
@@ -152,7 +133,7 @@ func (e *RbacRepository) QueryUserResources(ctx context.Context, user *models.Us
 		}
 	}`
 
-	drsp, err := db.DDB().QueryWithVar(targetID, q)
+	drsp, err := db.DDB().QueryID(targetID, q)
 	if err != nil {
 		return nil, fmt.Errorf("query err: %v", err)
 	}
@@ -354,7 +335,7 @@ func (e *RbacRepository) QueryRoleResources(ctx context.Context, role *models.Ro
 			}
 		}
 	}`
-	drsp, err := db.DDB().QueryWithVar(roleID, q)
+	drsp, err := db.DDB().QueryID(roleID, q)
 	//	drsp, err := db.DDB().QueryWithVars(ctx, q, variables)
 	if err != nil {
 		return nil, fmt.Errorf("query err: %v", err)
@@ -504,9 +485,7 @@ func (e *RbacRepository) AddResource(ctx context.Context, resource *models.Resou
 	logger.Infof("Received RbacRepository.AddResource request, ID: %d, Name: %s", resource.ID, resource.Name)
 
 	// 首先查询数据库中是否已有该ID
-
 	ids, err := e.QueryResourceExist(resource.ID)
-
 	if err != nil {
 		return fmt.Errorf("query err: %v", err)
 	}
@@ -521,7 +500,6 @@ func (e *RbacRepository) AddResource(ctx context.Context, resource *models.Resou
 	if err != nil {
 		return fmt.Errorf("dgraph Mutate error: %v", err)
 	}
-
 	return nil
 }
 

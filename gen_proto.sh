@@ -26,10 +26,10 @@ which protoc-gen-go
 MOD=Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any
 
 #Mgoogle/protobuf/descriptor.proto=github.com/golang/protobuf/protoc-gen-go/descriptor
-protoc -Iprotos --go_out=${MOD},plugins=grpc:protos updatecolumn.proto
+protoc -Iprotos --go_out=${MOD},plugins=grpc:protos user.proto
 
 # 增加valid 校验
-# protoc-go-inject-tag -input=protos/updatecolumn.pb.go
+# protoc-go-inject-tag -input=protos/user.pb.go
 
 
 # 去掉omitempty

@@ -20,6 +20,12 @@ protoc -I.  --go_out=protos --micro_out=protos protos/user.proto
 protoc -Iprotos  --go_out=protos --micro_out=protos role.proto
 ```
 
+### 异步事件
+
+```bash
+protoc -Iprotos  --go_out=protos/message --micro_out=protos/message message/message.proto
+```
+
 ### the following for graph design for dgraph
 
 ```bash

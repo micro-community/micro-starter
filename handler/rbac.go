@@ -17,7 +17,8 @@ import (
 	mService "github.com/micro/micro/v3/service"
 )
 
-//RbacHandler implements the user proto interface
+//RbacHandler implements the user proto interface,only for rbac
+
 type RbacHandler struct {
 	Name        string
 	UserSrv     *service.UserService     // instance of the user service

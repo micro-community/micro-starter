@@ -8,7 +8,7 @@ import (
 	mservice "github.com/micro/micro/v3/service"
 )
 
-//UserHandler implements the user proto interface
+//UserHandler implements the user proto interface,User : people、tenant(orgs、company)
 type UserHandler struct {
 	mService *mservice.Service
 	Name     string

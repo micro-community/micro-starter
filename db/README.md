@@ -19,3 +19,5 @@
 缓存：
 
 - redis
+
+## docker compose for dgraph

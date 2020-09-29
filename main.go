@@ -1,12 +1,13 @@
 package main
 
 import (
+	"github.com/micro-community/auth/config"
+	"github.com/micro-community/auth/subscriber"
 	"github.com/micro/go-micro/v3/logger"
 	"github.com/micro/micro/v3/cmd"
 	"github.com/micro/micro/v3/service"
 	"github.com/urfave/cli/v2"
 
-	"github.com/micro-community/auth/config"
 	//load profile
 	"github.com/micro-community/auth/profile"
 )
@@ -42,6 +43,9 @@ func main() {
 	config.LoadConfigWithDefault(func() *config.Config { return nil })
 
 	profile.BuildingStartupService(srv)
+
+	// subscribe to the "messages" topic
+	service.Subscribe("some-topic-message", new(subscriber.Rbac))
 
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

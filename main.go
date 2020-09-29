@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/micro-community/auth/config"
-	"github.com/micro-community/auth/subscriber"
+	"github.com/micro-community/auth/pubsub"
 	"github.com/micro/go-micro/v3/logger"
 	"github.com/micro/micro/v3/cmd"
 	"github.com/micro/micro/v3/service"
@@ -40,12 +40,13 @@ func main() {
 
 	cmd.DefaultCmd.Init(cmdOption)
 
-	config.LoadConfigWithDefault(func() *config.Config { return nil })
+	config.LoadConfigWithDefault(func(*config.Config) *config.Config {
+		return nil
+	})
 
-	profile.BuildingStartupService(srv)
-
-	// subscribe to the "messages" topic
-	service.Subscribe("some-topic-message", new(subscriber.Rbac))
+	profile.BuildingStartupService(srv, config.Cfg)
+	//handle pub/sub message
+	pubsub.RegisterSubscription(srv, config.Cfg.Pubsub)
 
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

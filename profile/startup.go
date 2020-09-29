@@ -31,12 +31,12 @@ type serviceCollection struct {
 }
 
 //BuildingStartupService build all service relationship
-func BuildingStartupService(srv *mservice.Service) {
+func BuildingStartupService(srv *mservice.Service, conf *config.Config) {
 
 	c := dig.New()
 
 	//data(database/cache) context
-	buildDataContext(c)
+	buildDataContext(c, conf)
 
 	//service : aggregate repository service and logic proc to provide service ability for handler
 	c.Provide(service.NewUser)
@@ -62,11 +62,11 @@ func BuildingStartupService(srv *mservice.Service) {
 
 }
 
-func buildDataContext(c *dig.Container) {
+func buildDataContext(c *dig.Container, conf *config.Config) {
 
-	db.BuildDBContext(config.Cfg.DBType)
+	db.BuildDBContext(conf.DBType)
 
-	switch config.Cfg.DBType {
+	switch conf.DBType {
 	case "dgraph":
 		c.Provide(dgraph.NewRBACRepository)
 	default:
@@ -74,6 +74,6 @@ func buildDataContext(c *dig.Container) {
 		c.Provide(memory.NewUserRepository)
 	}
 
-	db.InitCache()
+	db.InitCache(conf)
 
 }

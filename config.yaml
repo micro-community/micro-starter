@@ -1,7 +1,17 @@
+AsyncMessage:
+  PubTopics:
+    - alarm
+    - status
+    - event
+  SubTopic:
+    - event
+    - notification
+
 DBType: "memory"
 MaxOpenConns: 10
 MaxIdleConns: 100
 ConnMaxLifetime: 60000000000
+
 Redis:
   MasterName: "" # for HA Cluster
   SentinelAddrs:

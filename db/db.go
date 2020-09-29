@@ -14,16 +14,16 @@ import (
 
 var (
 	cacheCli      *cache.Client
-	db            *gorm.DB    // for mysql/sqlite
+	db            *gorm.DB      // for mysql/sqlite
 	dg            *nosql.DormDB //for dgraph
 	mdb           *mongo.Database
 	once          sync.Once
 	dbContextType string
 )
 
-func InitCache() {
+func InitCache(conf *config.Config) {
 	var err error
-	cacheCli, err = cache.NewClient(config.Cfg.Redis)
+	cacheCli, err = cache.NewClient(conf.Redis)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -46,7 +46,7 @@ func BuildDBContext(dbCase string) {
 
 }
 
-func DDB() *nosql.DormDB  {
+func DDB() *nosql.DormDB {
 
 	if dg != nil {
 		return dg

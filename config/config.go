@@ -14,6 +14,7 @@ import (
 	"github.com/micro-community/auth/cache"
 	"github.com/micro-community/auth/db/nosql"
 	"github.com/micro-community/auth/db/sql"
+	"github.com/micro-community/auth/pubsub"
 	"github.com/micro/go-micro/v3/logger"
 	"github.com/micro/micro/v3/service/config"
 )
@@ -23,23 +24,26 @@ type Config struct {
 	DBType  string
 	Host    string
 	Timeout int
-	Redis   cache.RedisCfg
-	MySQL   *sql.MySQLConfig
-	SQLite  *sql.SQLiteConfig
-	Mongodb *nosql.MongoCfg
-	Dgraph  *nosql.DgraphCfg
 
 	// sql db config
 	MaxOpenConns    int
 	MaxIdleConns    int
 	ConnMaxLifetime time.Duration
+
+	Redis   cache.RedisCfg
+	MySQL   *sql.MySQLConfig
+	SQLite  *sql.SQLiteConfig
+	Mongodb *nosql.MongoCfg
+	Dgraph  *nosql.DgraphCfg
+	Pubsub  *pubsub.Options
+
+	TenantKey string
 }
 
 //Service configuration and register
 var (
-	TenantKey      = "tenantids"
 	BASE_HERF_PATH = "./"
-	Cfg            *Config //User Loaded COnfig,if not setted ,default value will be used.
+	Cfg            *Config //User Loaded Config,if not setted ,default value will be used.
 )
 
 //Default of config
@@ -80,21 +84,26 @@ var Default = &Config{
 		Port:     0,
 		DBName:   "",
 	},
+	Pubsub: &pubsub.Options{
+		PubTopics: nil,
+		SubTopics: nil,
+	},
 }
 
 //LoadConfigWithDefault Load Config With Default
-func LoadConfigWithDefault(fn func() *Config) {
+func LoadConfigWithDefault(fn func(preConfig *Config) *Config) {
 
 	if fn == nil {
 		logger.Warnf("use default config")
 		Cfg = Default
 	}
 
-	Cfg = fn()
+	//modified config
+	tmpCfg := fn(Cfg)
 
-	if Cfg == nil {
+	if tmpCfg != nil {
 		logger.Warnf("try to use customer config failed, use default")
-		Cfg = Default
+		Cfg = tmpCfg
 	}
 
 	//  get config
@@ -107,6 +116,18 @@ func LoadConfigWithDefault(fn func() *Config) {
 	redisHost := config.Get("Redis", "Host").String("")
 	if len(redisHost) > 0 {
 		Cfg.Redis.Host = redisHost
+	}
+
+	pubtopic := config.Get("AsyncMessage", "PubTopics").StringSlice(nil)
+
+	if pubtopic != nil && len(pubtopic) > 0 {
+		Cfg.Pubsub.PubTopics = pubtopic
+	}
+
+	subtopic := config.Get("AsyncMessage", "SubTopics").StringSlice(nil)
+
+	if subtopic != nil && len(subtopic) > 0 {
+		Cfg.Pubsub.SubTopics = subtopic
 	}
 
 	logger.Infof("Redis Host %+v", redisHost)

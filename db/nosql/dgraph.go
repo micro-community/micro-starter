@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc/encoding/gzip"
 )
 
-//DgraphCfg for DgraphDB
-type DgraphCfg struct {
+//DgraphOptions for DgraphDB
+type DgraphOptions struct {
 	User     string
 	Password string
 	Host     string
@@ -26,7 +26,7 @@ type DormDB struct {
 	dg *dgo.Dgraph
 }
 
-func NewDGraphClient(cfg *DgraphCfg) *DormDB {
+func NewDGraphClient(cfg *DgraphOptions) *DormDB {
 
 	dialOpts := append([]grpc.DialOption{},
 		grpc.WithInsecure(),

@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type MySQLConfig struct {
+type MySqlOptions struct {
 	User      string
 	Password  string
 	Host      string
@@ -20,7 +20,7 @@ type MySQLConfig struct {
 	ConnMaxLifetime int
 }
 
-func (cfg *MySQLConfig) WithMySQLDefault() *MySQLConfig {
+func (cfg *MySqlOptions) WithMySQLDefault() *MySqlOptions {
 	if cfg == nil {
 		return nil
 	}
@@ -50,11 +50,11 @@ func (cfg *MySQLConfig) WithMySQLDefault() *MySQLConfig {
 }
 
 // db, err = gorm.Open("mysql", "metro:metro1234@10.252.6.139:3306/crm?charset=utf8mb4")
-func (c MySQLConfig) URI() string {
+func (c MySqlOptions) URI() string {
 	return fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8mb4", c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
-func NewMySQL(cfg *MySQLConfig) (db *gorm.DB, err error) {
+func NewMySQL(cfg *MySqlOptions) (db *gorm.DB, err error) {
 
 	c := cfg.WithMySQLDefault()
 	// 返回一个连接池

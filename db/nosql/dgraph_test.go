@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	dg = NewDGraphClient(&DgraphCfg{Url: "127.0.0.1:8090"})
+	dg = NewDGraphClient(&DgraphOptions{Url: "127.0.0.1:8090"})
 }
 
 func TestGraphQuery(t *testing.T) {

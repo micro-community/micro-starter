@@ -18,8 +18,8 @@ import (
 	"github.com/micro/go-micro/v3/logger"
 )
 
-//RedisCfg for redis cache
-type RedisCfg struct {
+//Options for redis cache
+type Options struct {
 	MasterName    string   `json:"master_name"`
 	SentinelAddrs []string `json:"sentinel_addrs"`
 
@@ -35,13 +35,13 @@ type RedisCfg struct {
 }
 
 type Client struct {
-	cfg RedisCfg
+	cfg Options
 	cli *redis.Client
 }
 
 var (
 	cli    *Client
-	config RedisCfg
+	config Options
 	once   sync.Once
 )
 
@@ -62,7 +62,7 @@ func (c *Client) Set(ctx context.Context, key string, v []byte, expire time.Dura
 	return nil
 }
 
-func NewClient(cfg RedisCfg) (client *Client, err error) {
+func NewClient(cfg Options) (client *Client, err error) {
 
 	if cli != nil {
 		return cli, nil

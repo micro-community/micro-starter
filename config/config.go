@@ -19,8 +19,8 @@ import (
 	"github.com/micro/micro/v3/service/config"
 )
 
-//Config of type
-type Config struct {
+//Options of type
+type Options struct {
 	DBType  string
 	Host    string
 	Timeout int
@@ -30,11 +30,11 @@ type Config struct {
 	MaxIdleConns    int
 	ConnMaxLifetime time.Duration
 
-	Redis   cache.RedisCfg
-	MySQL   *sql.MySQLConfig
-	SQLite  *sql.SQLiteConfig
-	Mongodb *nosql.MongoCfg
-	Dgraph  *nosql.DgraphCfg
+	Redis   cache.Options
+	MySQL   *sql.MySqlOptions
+	SQLite  *sql.SQLiteOptions
+	Mongodb *nosql.MongoOptions
+	Dgraph  *nosql.DgraphOptions
 	Pubsub  *pubsub.Options
 
 	TenantKey string
@@ -43,18 +43,18 @@ type Config struct {
 //Service configuration and register
 var (
 	BASE_HERF_PATH = "./"
-	Cfg            *Config //User Loaded Config,if not setted ,default value will be used.
+	Cfg            *Options //User Loaded Options,if not setted ,default value will be used.
 )
 
 //Default of config
-var Default = &Config{
+var Default = &Options{
 
 	DBType:          "memory",
 	MaxOpenConns:    2,
 	MaxIdleConns:    10,
 	ConnMaxLifetime: time.Duration(time.Hour),
 
-	Redis: cache.RedisCfg{
+	Redis: cache.Options{
 		MasterName:     "",
 		SentinelAddrs:  nil,
 		Host:           "localhost",
@@ -63,21 +63,21 @@ var Default = &Config{
 		MaxIdle:        1,
 		MaxIdleTimeout: 1,
 	},
-	SQLite: &sql.SQLiteConfig{
+	SQLite: &sql.SQLiteOptions{
 		User:     "",
 		Password: "",
 		Host:     "localhost",
 		DBName:   "",
 		Path:     "",
 	},
-	Mongodb: &nosql.MongoCfg{
+	Mongodb: &nosql.MongoOptions{
 		User:     "",
 		Password: "",
 		Host:     "localhost",
 		Port:     27017,
 		DBName:   "auth",
 	},
-	Dgraph: &nosql.DgraphCfg{
+	Dgraph: &nosql.DgraphOptions{
 		User:     "",
 		Password: "",
 		Host:     "localhost",
@@ -90,8 +90,8 @@ var Default = &Config{
 	},
 }
 
-//LoadConfigWithDefault Load Config With Default
-func LoadConfigWithDefault(fn func(preConfig *Config) *Config) {
+//LoadConfigWithDefault Load Options With Default
+func LoadConfigWithDefault(fn func(preConfig *Options) *Options) {
 
 	if fn == nil {
 		logger.Warnf("use default config")

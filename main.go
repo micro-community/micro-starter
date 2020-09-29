@@ -40,7 +40,7 @@ func main() {
 
 	cmd.DefaultCmd.Init(cmdOption)
 
-	config.LoadConfigWithDefault(func(*config.Config) *config.Config {
+	config.LoadConfigWithDefault(func(*config.Options) *config.Options {
 		return nil
 	})
 

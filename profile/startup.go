@@ -31,7 +31,7 @@ type serviceCollection struct {
 }
 
 //BuildingStartupService build all service relationship
-func BuildingStartupService(srv *mservice.Service, conf *config.Config) {
+func BuildingStartupService(srv *mservice.Service, conf *config.Options) {
 
 	c := dig.New()
 
@@ -62,7 +62,7 @@ func BuildingStartupService(srv *mservice.Service, conf *config.Config) {
 
 }
 
-func buildDataContext(c *dig.Container, conf *config.Config) {
+func buildDataContext(c *dig.Container, conf *config.Options) {
 
 	db.BuildDBContext(conf.DBType)
 

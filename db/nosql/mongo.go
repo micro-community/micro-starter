@@ -11,8 +11,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-//MongoCfg for mongodb
-type MongoCfg struct {
+//MongoOptions for mongodb
+type MongoOptions struct {
 	User     string
 	Password string
 	Host     string
@@ -25,7 +25,7 @@ var (
 )
 
 // Init - init mongodb connection
-func Init(config *MongoCfg) {
+func Init(config *MongoOptions) {
 
 	uri := fmt.Sprintf("mongodb://%s:%s@%s:%d", config.User, config.Password, config.Host, config.Port)
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))

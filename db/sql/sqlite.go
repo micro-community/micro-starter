@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type SQLiteConfig struct {
+type SQLiteOptions struct {
 	User      string
 	Password  string
 	Host      string
@@ -16,7 +16,7 @@ type SQLiteConfig struct {
 	LogDetail bool
 }
 
-func (cfg *SQLiteConfig) WithSQLiteDefault() *SQLiteConfig {
+func (cfg *SQLiteOptions) WithSQLiteDefault() *SQLiteOptions {
 	if cfg == nil {
 		return nil
 	}
@@ -29,7 +29,7 @@ func (cfg *SQLiteConfig) WithSQLiteDefault() *SQLiteConfig {
 	return cfg
 }
 
-func NewSQLite(cfg *SQLiteConfig) *gorm.DB {
+func NewSQLite(cfg *SQLiteOptions) *gorm.DB {
 
 	c := cfg.WithSQLiteDefault()
 	// 返回一个连接池

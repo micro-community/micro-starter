@@ -106,26 +106,35 @@ func LoadConfigWithDefault(fn func(preConfig *Options) *Options) {
 		Cfg = tmpCfg
 	}
 
+	//val, _ := config.Get("key.subkey3")
+	// if val.String("") != "Merge" {
+	// 	fmt.Println("ERROR: key.subkey3 should be 'Merge' but it is:", val.String(""))
+	// }
 	//  get config
-	dbType := config.Get("DBType").String("")
-	if len(dbType) > 0 {
+	dbTypeValue, err := config.Get("DBType")
+	dbType := dbTypeValue.String("")
+	if err != nil && dbType != "" {
 		Cfg.DBType = dbType
 	}
 	logger.Infof("DBType %+v", dbType)
 
-	redisHost := config.Get("Redis", "Host").String("")
-	if len(redisHost) > 0 {
+	redisHostValue, err := config.Get("Redis.Host")
+	redisHost := redisHostValue.String("")
+
+	if err != nil && redisHost != "" {
 		Cfg.Redis.Host = redisHost
 	}
 
-	pubtopic := config.Get("AsyncMessage", "PubTopics").StringSlice(nil)
+	pubtopicValue, err := config.Get("AsyncMessage.PubTopics")
+	pubtopic := pubtopicValue.StringSlice(nil)
 
 	if pubtopic != nil && len(pubtopic) > 0 {
 		Cfg.Pubsub.PubTopics = pubtopic
 	}
 
-	subtopic := config.Get("AsyncMessage", "SubTopics").StringSlice(nil)
+	subtopicValue, err := config.Get("AsyncMessage.SubTopics")
 
+	subtopic := subtopicValue.StringSlice(nil)
 	if subtopic != nil && len(subtopic) > 0 {
 		Cfg.Pubsub.SubTopics = subtopic
 	}

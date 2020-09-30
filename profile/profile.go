@@ -3,19 +3,16 @@ package profile
 import (
 	"github.com/micro/go-micro/v3/auth/noop"
 	"github.com/micro/go-micro/v3/broker/http"
-	"github.com/micro/go-micro/v3/config"
-
 	"github.com/micro/go-micro/v3/registry/mdns"
 	"github.com/micro/go-micro/v3/runtime/local"
-
-	//"github.com/micro/go-micro/v3/store/file"
 	"github.com/micro/micro/v3/service/logger"
 
-	mSrcFile "github.com/micro/go-micro/v3/config/source/file"
+	mStore "github.com/micro/go-micro/v3/config/store"
 	memStream "github.com/micro/go-micro/v3/events/stream/memory"
+	mFile "github.com/micro/go-micro/v3/store/file"
 	mem "github.com/micro/go-micro/v3/store/memory"
 
-	mProfile "github.com/micro/micro/v3/profile"
+	microProfile "github.com/micro/micro/v3/profile"
 	microAuth "github.com/micro/micro/v3/service/auth"
 	microConfig "github.com/micro/micro/v3/service/config"
 	microEvents "github.com/micro/micro/v3/service/events"
@@ -26,31 +23,41 @@ import (
 )
 
 func init() {
-	mProfile.Register("dev", Dev)
+	microProfile.Register("dev", Dev)
 }
 
 var (
 	BASE_HERF_PATH = "./"
 )
 
+/*
+	config.WithSource(
+			mSrcFile.NewSource(
+				mSrcFile.WithPath(BASE_HERF_PATH + "config.yaml"),
+			),
+*/
+
 // Dev profile to run develop env
-var Dev = &mProfile.Profile{
+var Dev = &microProfile.Profile{
 	Name: "dev",
 	Setup: func(ctx *cli.Context) error {
 		microAuth.DefaultAuth = noop.NewAuth()
 		microRuntime.DefaultRuntime = local.NewRuntime()
 		//microStore.DefaultStore = file.NewStore()
 		microStore.DefaultStore = mem.NewStore()
-		microConfig.DefaultConfig, _ = config.NewConfig(
-			config.WithSource(
-				mSrcFile.NewSource(
-					mSrcFile.WithPath(BASE_HERF_PATH + "config.yaml"),
-				),
-			),
-		)
-		mProfile.SetupBroker(http.NewBroker())
-		mProfile.SetupRegistry(mdns.NewRegistry())
-		//	mProfile.SetupJWTRules()
+
+		//this is not right, currently,file config is under redoing
+		microConfig.DefaultConfig, _ = mStore.NewConfig(mFile.NewStore(), "micro-starter")
+		// microConfig.DefaultConfig, _ = config.NewConfig(
+		// 	config.WithSource(
+		// 		mSrcFile.NewSource(
+		// 			mSrcFile.WithPath(BASE_HERF_PATH + "config.yaml"),
+		// 		),
+		// 	),
+		// )
+		microProfile.SetupBroker(http.NewBroker())
+		microProfile.SetupRegistry(mdns.NewRegistry())
+		//	microProfile.SetupJWTRules()
 		var err error
 		microEvents.DefaultStream, err = memStream.NewStream()
 		if err != nil {

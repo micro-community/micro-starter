@@ -7,12 +7,15 @@ go 1.15
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
+	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b // indirect
 	github.com/dgraph-io/dgo/v200 v200.0.0-20200916081436-9ff368ad829a
 	github.com/go-redis/redis/v8 v8.1.3
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
-	github.com/micro/go-micro/v3 v3.0.0-beta.2.0.20200911124113-3bb76868d194
-	github.com/micro/micro/v3 v3.0.0-beta.4
+	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/imdario/mergo v0.3.9 // indirect
+	github.com/micro/go-micro/v3 v3.0.0-beta.2.0.20200929133051-87e898f4fc62
+	github.com/micro/micro/v3 v3.0.0-beta.5
 	github.com/olivere/elastic/v7 v7.0.20
 	github.com/sirupsen/logrus v1.6.0
 	github.com/urfave/cli/v2 v2.2.0

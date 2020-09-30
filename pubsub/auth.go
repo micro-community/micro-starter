@@ -19,8 +19,9 @@ type rbac struct {
 func RegisterSubscription(srv *service.Service, options *Options) {
 
 	rbacSub := &rbac{
-		mservice:        srv,
-		topicsPublisher: map[string]*service.Event{},
+		mservice:         srv,
+		topicsPublisher:  map[string]*service.Event{},
+		topicsSubscribed: []string{},
 	}
 
 	// Add all topics to publish
@@ -30,10 +31,12 @@ func RegisterSubscription(srv *service.Service, options *Options) {
 		rbacSub.topicsPublisher[topciString] = publisher
 
 	}
-
+	//subscribe all topic
 	for _, topciString := range options.SubTopics {
 		//topciString := "some-topic-to-subscribe"
-		srv.Subscribe(topciString, rbacSub)
+		if err := srv.Subscribe(topciString, rbacSub); err == nil {
+			rbacSub.topicsSubscribed = append(rbacSub.topicsSubscribed, topciString)
+		}
 	}
 
 }
@@ -51,7 +54,7 @@ func (r *rbac) Publish(ctx context.Context, msg *event.Message) error {
 	return errors.New("no topic exist")
 }
 
-func (r *rbac) Handle(ctx context.Context, msg *event.Message) error {
+func (r *rbac) Sub(ctx context.Context, msg *event.Message) error {
 	log.Info("Received message: ", msg.Body)
 	return nil
 }

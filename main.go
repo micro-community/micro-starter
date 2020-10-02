@@ -22,7 +22,7 @@ func main() {
 	// add customer Flags
 	cmdFlags := []cli.Flag{
 		&cli.StringFlag{
-			Name:    "conf_path",
+			Name:    "configpath",
 			EnvVars: []string{"MICRO_STARTER_CONFIG_PATH"},
 			Usage:   "config path of current app",
 			Value:   "./",

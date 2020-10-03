@@ -8,6 +8,7 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
 require (
 	github.com/dgraph-io/dgo/v200 v200.0.0-20200916081436-9ff368ad829a
+	github.com/envoyproxy/protoc-gen-validate v0.1.0
 	github.com/go-redis/redis/v8 v8.2.3
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b

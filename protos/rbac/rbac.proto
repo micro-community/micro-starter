@@ -25,15 +25,14 @@ service Rbac {
 }
 
 
+
 message Request {
-	string id = 1;  [(validate.rules).string = {
-                        min_bytes: 4, max_bytes: 32
-                        }];
+	string id = 1  [(validate.rules).string.max_len = 36];
 }
 
 message LinkRequest {
-	string id1 = 1;
-	string id2 = 2;
+	string id1 = 1  [(validate.rules).string.max_len = 36];
+	string id2 = 2  [(validate.rules).string.max_len = 36];
 }
 
 message Response {
@@ -41,17 +40,15 @@ message Response {
 }
 
 message User {
-	string id = 1;
-	string name = 2;
-    int64 age = 3;  [(validate.rules).int64 = {
-                        min_bytes: 4, max_bytes: 32
-                        }];
-    string gender = 4;
+	string id = 1  [(validate.rules).string.max_len = 36];
+	string name = 2 [(validate.rules).string = {min_len: 2, max_len: 10}];
+    int32 age = 3 [(validate.rules).int32 = {gt: 0, lte: 180}];
+    int32 gender = 4 [(validate.rules).int32 = {in: [0,1,2]}]; //0: female,1 male,2,unkonwn
 }
 
 message Role {
-	string id = 1;
-	string name = 2;
+	string id = 1 [(validate.rules).string.max_len = 36];
+	string name = 2 [(validate.rules).string = {min_len: 2, max_len: 10}];
 }
 
 message Roles {
@@ -59,8 +56,8 @@ message Roles {
 }
 
 message Resource {
-	string id = 1;
-	string name = 2;
+	string id = 1[(validate.rules).string.max_len = 36];
+	string name = 2 [(validate.rules).string = {min_len: 2, max_len: 10}];
 }
 
 message Resources {

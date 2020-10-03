@@ -26,7 +26,7 @@ protoc -Iprotos  --go_out=protos/message --micro_out=protos/message message/mess
 ### the following for graph design for dgraph
 
 ```bash
-protoc -Iprotos/rbac  --go_out=protos/rbac --micro_out=protos/rbac --validate_out="lang=go:protos/rbac" rbac.proto
+protoc -Iprotos/rbac  -I ${GOPATH}/src/github.com/envoyproxy/protoc-gen-validate  --go_out=protos/rbac --micro_out=protos/rbac --validate_out="lang=go:protos/rbac" rbac.proto
 ```
 
 ## Coding Style

@@ -9,14 +9,11 @@ micro(v3) 单(微)服务能力集框架,有兴趣的朋友，热烈欢迎 PR.
 ```bash
 go get -u github.com/golang/protobuf/proto
 go get -u github.com/golang/protobuf/protoc-gen-go
-go get github.com/micro/micro/v3/cmd/protoc-gen-micro@master
+go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 ```
 
 ```bash
 protoc -I.  --go_out=protos --micro_out=protos protos/user.proto
-```
-
-```bash
 protoc -Iprotos  --go_out=protos --micro_out=protos role.proto
 ```
 
@@ -29,7 +26,7 @@ protoc -Iprotos  --go_out=protos/message --micro_out=protos/message message/mess
 ### the following for graph design for dgraph
 
 ```bash
-protoc -Iprotos/rbac  --go_out=protos/rbac --micro_out=protos/rbac rbac.proto
+protoc -Iprotos/rbac  --go_out=protos/rbac --micro_out=protos/rbac --validate_out="lang=go:protos/rbac" rbac.proto
 ```
 
 ## Coding Style

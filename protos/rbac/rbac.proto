@@ -4,6 +4,8 @@ option go_package = ".;rbac";
 
 package rbac;
 
+import "github.com/envoyproxy/protoc-gen-validate/validate/validate.proto";
+
 service Rbac {
     rpc AddUser(User) returns (Response);
     rpc RemoveUser(Request) returns (Response);
@@ -24,7 +26,9 @@ service Rbac {
 
 
 message Request {
-	string id = 1;
+	string id = 1;  [(validate.rules).string = {
+                        min_bytes: 4, max_bytes: 32
+                        }];
 }
 
 message LinkRequest {
@@ -39,7 +43,9 @@ message Response {
 message User {
 	string id = 1;
 	string name = 2;
-    int64 age = 3;
+    int64 age = 3;  [(validate.rules).int64 = {
+                        min_bytes: 4, max_bytes: 32
+                        }];
     string gender = 4;
 }
 

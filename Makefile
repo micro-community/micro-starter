@@ -9,11 +9,13 @@ BUILD_DATE=$(shell date +%s)
 LDFLAGS=-X $(GIT_IMPORT).BuildDate=$(BUILD_DATE) -X $(GIT_IMPORT).GitCommit=$(GIT_COMMIT) -X $(GIT_IMPORT).GitTag=$(GIT_TAG)
 IMAGE_TAG=$(GIT_TAG)-$(GIT_COMMIT)
 
-
+#vars
 GOPATH:=$(shell go env GOPATH)
 GOROOT:=$(shell go env GOROOT)
+empty :=
+space := $(empty) $(empty)
 
-#for go imports
+#go imports
 VALIDATE_IMPORT := Mvalidate/validate.proto=github.com/envoyproxy/protoc-gen-validate/validate
 GO_IMPORT_SPACES := ${VALIDATE_IMPORT},\
 	Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any,\
@@ -23,12 +25,8 @@ GO_IMPORT_SPACES := ${VALIDATE_IMPORT},\
 	Mgoogle/protobuf/wrappers.proto=github.com/golang/protobuf/ptypes/wrappers,\
 	Mgoogle/protobuf/descriptor.proto=github.com/golang/protobuf/protoc-gen-go/descriptor
 
-# vars
-empty :=
-space := $(empty) $(empty)
 
 GO_IMPORT:=$(subst $(space),,$(GO_IMPORT_SPACES))
-
 
 all: build
 
@@ -88,7 +86,8 @@ role:
 .PHONY: message
 message:
 	protoc  \
-	-I protos\message \
-	--go_out=protos/message \
-	--micro_out=protos/message \
+	-I protos/message \
+	--go_out="${GO_IMPORT}:protos/message"  \
+	--micro_out="${GO_IMPORT}:protos/message"   \
+	--validate_out="lang=go:protos/message"   \
 	message.proto

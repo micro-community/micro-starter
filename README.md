@@ -2,7 +2,7 @@
 
 micro v3 starter framework
 
-micro(v3) 单(微)服务能力集框架,有兴趣的朋友，热烈欢迎 PR.
+micro(v3) 微服务能力集框架,有兴趣的朋友，热烈欢迎 PR.
 
 ## install
 
@@ -14,16 +14,11 @@ go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 
 ### generate protos
 
-`make user`
-`make role`
+- `make user`
+- `make role`
+- `make message` #async message
 
-### async message
-
-```bash
-protoc -Iprotos  --go_out=protos/message --micro_out=protos/message message/message.proto
-```
-
-### the following for graph design for dgraph
+### following for graph design for dgraph
 
 `make rbac`
 

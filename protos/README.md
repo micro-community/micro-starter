@@ -1,16 +1,17 @@
 # 说明
 
-```proto
-import "google/protobuf/descriptor.proto";
-import "google/protobuf/duration.proto";
-import "google/protobuf/timestamp.proto";
-```
+关于校验
 
-```shell
-protoc -I protos/rbac  -I $env:GOPATH/src  --go_out=protos/rbac --micro_out=protos/rbac --validate_out="lang=go:protos/rbac" rbac.proto
-```
+## validation
 
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/validate/validate.proto
 
-```shell
-protoc -I protos/rbac  -I ${go env GOROOT} -I ${go env GOPATH}/src  --go_out=protos/rbac --micro_out=protos/rbac --validate_out="lang=go:protos/rbac" rbac.proto
+```github
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/tests/harness/cases/enums.proto
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/tests/harness/cases/bytes.proto
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/tests/harness/cases/strings.proto
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/tests/harness/cases/messages.proto
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/tests/harness/cases/numbers.proto
+https://github.com/envoyproxy/protoc-gen-validate/blob/master/tests/harness/cases/other_package/embed.proto
+
 ```

@@ -12,12 +12,12 @@ go get -u github.com/golang/protobuf/protoc-gen-go
 go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 ```
 
-```bash
-protoc -I.  --go_out=protos --micro_out=protos protos/user.proto
-protoc -Iprotos  --go_out=protos --micro_out=protos role.proto
-```
+### generate protos
 
-### 异步事件
+`make user`
+`make role`
+
+### async message
 
 ```bash
 protoc -Iprotos  --go_out=protos/message --micro_out=protos/message message/message.proto
@@ -25,9 +25,7 @@ protoc -Iprotos  --go_out=protos/message --micro_out=protos/message message/mess
 
 ### the following for graph design for dgraph
 
-```bash
-protoc -Iprotos/rbac  -I ${GOPATH}/src/github.com/envoyproxy/protoc-gen-validate  --go_out=protos/rbac --micro_out=protos/rbac --validate_out="lang=go:protos/rbac" rbac.proto
-```
+`make rbac`
 
 ## Coding Style
 

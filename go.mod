@@ -12,6 +12,7 @@ require (
 	github.com/go-redis/redis/v8 v8.2.3
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
+	github.com/hashicorp/go-version v1.2.1
 	github.com/micro/go-micro/v3 v3.0.0-beta.3
 	github.com/micro/micro/v3 v3.0.0-beta.5.1
 	github.com/olivere/elastic/v7 v7.0.20

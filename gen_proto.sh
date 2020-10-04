@@ -16,17 +16,22 @@ trap 'trap_handler ${LINENO} ${$?}' ERR
 echo "Checking tools dependencies..."
 which protoc
 which protoc-gen-go
+which protoc-gen-validate
 
 
-# github.com/golang/protobuf/ptypes/any
-# github.com/golang/protobuf/descriptor
-#或者
-#github.com/gogo/protobuf/types
+GO_IMPORT_SPACES=Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any,\
+	Mgoogle/protobuf/duration.proto=github.com/golang/protobuf/ptypes/duration,\
+	Mgoogle/protobuf/struct.proto=github.com/golang/protobuf/ptypes/struct,\
+	Mgoogle/protobuf/timestamp.proto=github.com/golang/protobuf/ptypes/timestamp,\
+	Mgoogle/protobuf/wrappers.proto=github.com/golang/protobuf/ptypes/wrappers,\
+	Mgoogle/protobuf/descriptor.proto=github.com/golang/protobuf/protoc-gen-go/descriptor
 
-MOD=Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any
 
+#MOD=Mgoogle/protobuf/any.proto=github.com/golang/protobuf/ptypes/any
 #Mgoogle/protobuf/descriptor.proto=github.com/golang/protobuf/protoc-gen-go/descriptor
-protoc -Iprotos --go_out=${MOD},plugins=grpc:protos user.proto
+protoc -Iprotos --go_out=${GO_IMPORT_SPACES},plugins=grpc:protos user.proto
+
+protoc -I "${GOROOT}/include" -I protos/rbac 	-I "${GOPATH}/src" --go_out="${GO_IMPORT}:protos/rbac"--micro_out="${GO_IMPORT}:protos/rbac" --validate_out="lang=go:protos/rbac" rbac.proto
 
 # 增加valid 校验
 # protoc-go-inject-tag -input=protos/user.pb.go

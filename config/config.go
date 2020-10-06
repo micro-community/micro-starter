@@ -40,12 +40,6 @@ type Options struct {
 	TenantKey string
 }
 
-//Service configuration and register
-var (
-	BASE_HERF_PATH = "./"
-	Cfg            *Options //User Loaded Options,if not setted ,default value will be used.
-)
-
 //Default of config
 var Default = &Options{
 
@@ -95,15 +89,13 @@ func LoadConfigWithDefault(fn func(preConfig *Options) *Options) {
 
 	if fn == nil {
 		logger.Warnf("use default config")
-		Cfg = Default
 	}
 
 	//modified config
-	tmpCfg := fn(Cfg)
+	tmpCfg := fn(Default)
 
 	if tmpCfg != nil {
 		logger.Warnf("try to use customer config failed, use default")
-		Cfg = tmpCfg
 	}
 
 	//val, _ := config.Get("key.subkey3")
@@ -114,7 +106,7 @@ func LoadConfigWithDefault(fn func(preConfig *Options) *Options) {
 	dbTypeValue, err := config.Get("DBType")
 	dbType := dbTypeValue.String("")
 	if err != nil && dbType != "" {
-		Cfg.DBType = dbType
+		Default.DBType = dbType
 	}
 	logger.Infof("DBType %+v", dbType)
 
@@ -122,21 +114,21 @@ func LoadConfigWithDefault(fn func(preConfig *Options) *Options) {
 	redisHost := redisHostValue.String("")
 
 	if err != nil && redisHost != "" {
-		Cfg.Redis.Host = redisHost
+		Default.Redis.Host = redisHost
 	}
 
 	pubtopicValue, err := config.Get("AsyncMessage.PubTopics")
 	pubtopic := pubtopicValue.StringSlice(nil)
 
 	if pubtopic != nil && len(pubtopic) > 0 {
-		Cfg.Pubsub.PubTopics = pubtopic
+		Default.Pubsub.PubTopics = pubtopic
 	}
 
 	subtopicValue, err := config.Get("AsyncMessage.SubTopics")
 
 	subtopic := subtopicValue.StringSlice(nil)
 	if subtopic != nil && len(subtopic) > 0 {
-		Cfg.Pubsub.SubTopics = subtopic
+		Default.Pubsub.SubTopics = subtopic
 	}
 
 	logger.Infof("Redis Host %+v", redisHost)

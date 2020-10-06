@@ -44,9 +44,9 @@ func main() {
 		return nil
 	})
 
-	profile.BuildingStartupService(srv, config.Cfg)
+	profile.BuildingStartupService(srv, config.Default)
 	//handle pub/sub message
-	pubsub.RegisterSubscription(srv, config.Cfg.Pubsub)
+	pubsub.RegisterSubscription(srv, config.Default.Pubsub)
 
 	if err := srv.Run(); err != nil {
 		logger.Fatal(err)

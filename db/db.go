@@ -52,7 +52,7 @@ func DDB() *nosql.DormDB {
 		return dg
 	}
 
-	dg = nosql.NewDGraphClient(config.Cfg.Dgraph)
+	dg = nosql.NewDGraphClient(config.Default.Dgraph)
 	once.Do(func() {
 		migrate()
 	})
@@ -66,20 +66,20 @@ func DB() *gorm.DB {
 	if db != nil {
 		return db
 	}
-	db = sql.NewSQLite(config.Cfg.SQLite)
+	db = sql.NewSQLite(config.Default.SQLite)
 	once.Do(func() {
 		migrate()
 	})
 
 	if sqlDB, err := db.DB(); err != nil {
 		// SetMaxIdleConns 设置空闲连接池中连接的最大数量
-		sqlDB.SetMaxIdleConns(config.Cfg.MaxIdleConns)
+		sqlDB.SetMaxIdleConns(config.Default.MaxIdleConns)
 
 		// SetMaxOpenConns 设置打开数据库连接的最大数量。
-		sqlDB.SetMaxOpenConns(config.Cfg.MaxOpenConns)
+		sqlDB.SetMaxOpenConns(config.Default.MaxOpenConns)
 
 		// SetConnMaxLifetime 设置了连接可复用的最大时间。
-		sqlDB.SetConnMaxLifetime(config.Cfg.ConnMaxLifetime)
+		sqlDB.SetConnMaxLifetime(config.Default.ConnMaxLifetime)
 	}
 
 	return db

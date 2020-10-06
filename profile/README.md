@@ -1,6 +1,6 @@
 # profile for server start up
 
-set up boost configuration for micro runtime which means different components of go-micro
+set up boost configuration for micro runtime which means using different components of go-micro
 
 - local
 
@@ -15,4 +15,8 @@ set up boost configuration for micro runtime which means different components of
   - config configmap
   - router static :dns
 
-- test
+- dev
+  - registry mdns
+  - config environment
+  - broker http
+  - store memory

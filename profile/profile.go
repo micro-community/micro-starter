@@ -5,12 +5,12 @@ import (
 	"github.com/micro/go-micro/v3/broker/http"
 	"github.com/micro/go-micro/v3/registry/mdns"
 	"github.com/micro/go-micro/v3/runtime/local"
+	"github.com/micro/go-micro/v3/store/file"
 	"github.com/micro/micro/v3/service/logger"
 
-	mStore "github.com/micro/go-micro/v3/config/store"
+	//mStore "github.com/micro/go-micro/v3/config/store"
+	mEnv "github.com/micro/go-micro/v3/config/env"
 	memStream "github.com/micro/go-micro/v3/events/stream/memory"
-	mFile "github.com/micro/go-micro/v3/store/file"
-	mem "github.com/micro/go-micro/v3/store/memory"
 
 	microProfile "github.com/micro/micro/v3/profile"
 	microAuth "github.com/micro/micro/v3/service/auth"
@@ -26,10 +26,6 @@ func init() {
 	microProfile.Register("dev", Dev)
 }
 
-var (
-	BASE_HERF_PATH = "./"
-)
-
 /*
 	config.WithSource(
 			mSrcFile.NewSource(
@@ -43,18 +39,9 @@ var Dev = &microProfile.Profile{
 	Setup: func(ctx *cli.Context) error {
 		microAuth.DefaultAuth = noop.NewAuth()
 		microRuntime.DefaultRuntime = local.NewRuntime()
-		//microStore.DefaultStore = file.NewStore()
-		microStore.DefaultStore = mem.NewStore()
-
-		//this is not right, currently,file config is under redoing
-		microConfig.DefaultConfig, _ = mStore.NewConfig(mFile.NewStore(), "micro-starter")
-		// microConfig.DefaultConfig, _ = config.NewConfig(
-		// 	config.WithSource(
-		// 		mSrcFile.NewSource(
-		// 			mSrcFile.WithPath(BASE_HERF_PATH + "config.yaml"),
-		// 		),
-		// 	),
-		// )
+		microStore.DefaultStore = file.NewStore()
+		//microStore.DefaultStore = mem.NewStore()
+		microConfig.DefaultConfig, _ = mEnv.NewConfig()
 		microProfile.SetupBroker(http.NewBroker())
 		microProfile.SetupRegistry(mdns.NewRegistry())
 		//	microProfile.SetupJWTRules()

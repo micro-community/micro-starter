@@ -85,7 +85,7 @@ var Default = &Options{
 }
 
 //LoadConfigWithDefault Load Options With Default
-func LoadConfigWithDefault(fn func(preConfig *Options) *Options) {
+func LoadConfigWithDefault(fn func(defaultConfig *Options) *Options) {
 
 	if fn == nil {
 		logger.Warnf("use default config")

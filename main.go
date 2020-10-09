@@ -38,11 +38,14 @@ func main() {
 	cmdFlags = append(cmd.DefaultCmd.App().Flags, cmdFlags...)
 	cmdOption := cmd.Flags(cmdFlags...)
 
-	cmd.DefaultCmd.Init(cmdOption)
-
-	config.LoadConfigWithDefault(func(*config.Options) *config.Options {
+	cmdActionOption := cmd.Action(func(ctx *cli.Context) error {
+		config.LoadConfigWithDefault(func(*config.Options) *config.Options {
+			return nil
+		})
 		return nil
 	})
+
+	cmd.DefaultCmd.Init(cmdOption, cmdActionOption)
 
 	profile.BuildingStartupService(srv, config.Default)
 	//handle pub/sub message

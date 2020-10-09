@@ -9,13 +9,13 @@
       "program": "${workspaceFolder}/main.go",
       "cwd": "${workspaceFolder}",
       "env": {
-        "MICRO_STARTER_CONFIG_PATH": "./",
+        //       "MICRO_STARTER_CONFIG_PATH": "./",
         "MICRO_STARTER_DEBUG_MODE": "true"
       },
       "args": [
         "--profile=dev",
         "--service_address=127.0.0.0.1:8080",
-        "--c=config.json"
+        "--c=./config.json"
       ]
     }
   ]

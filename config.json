@@ -10,7 +10,7 @@
       "notification"
     ]
   },
-  "DBType": "memory",
+  "DBType": "dgraph",
   "MaxOpenConns": 10,
   "MaxIdleConns": 100,
   "ConnMaxLifetime": 60000000000,

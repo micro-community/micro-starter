@@ -92,10 +92,11 @@ func LoadConfigWithDefault(fn func(defaultConfig *Options) *Options) {
 	}
 
 	//modified config
-	tmpCfg := fn(Default)
-
-	if tmpCfg != nil {
-		logger.Warnf("try to use customer config failed, use default")
+	if fn != nil {
+		tmpCfg := fn(Default)
+		if tmpCfg != nil {
+			logger.Warnf("try to use customer config failed, use default")
+		}
 	}
 
 	//val, _ := config.Get("key.subkey3")

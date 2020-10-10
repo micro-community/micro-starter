@@ -15,7 +15,7 @@
       "args": [
         "--profile=dev",
         "--service_address=127.0.0.0.1:8080",
-        "--c=./config.json"
+        "--c=config.json"
       ]
     }
   ]

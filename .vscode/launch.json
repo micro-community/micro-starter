@@ -10,7 +10,8 @@
       "cwd": "${workspaceFolder}",
       "env": {
         //       "MICRO_STARTER_CONFIG_PATH": "./",
-        "MICRO_STARTER_DEBUG_MODE": "true"
+        "MICRO_STARTER_DEBUG_MODE": "true",
+        "DBType": "ddddddd",
       },
       "args": [
         "--profile=dev",

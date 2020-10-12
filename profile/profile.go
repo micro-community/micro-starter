@@ -8,8 +8,7 @@ import (
 	"github.com/micro/go-micro/v3/store/file"
 	"github.com/micro/micro/v3/service/logger"
 
-	mStore "github.com/micro/go-micro/v3/config/store"
-	//mEnv "github.com/micro/go-micro/v3/config/env"
+	mEnv "github.com/micro/go-micro/v3/config/env"
 	memStream "github.com/micro/go-micro/v3/events/stream/memory"
 
 	microProfile "github.com/micro/micro/v3/profile"
@@ -41,7 +40,7 @@ var Dev = &microProfile.Profile{
 		microRuntime.DefaultRuntime = local.NewRuntime()
 		microStore.DefaultStore = file.NewStore()
 		//microStore.DefaultStore = mem.NewStore()
-		microConfig.DefaultConfig, _ = mStore.NewConfig(microStore.DefaultStore, "")
+		microConfig.DefaultConfig, _ = mEnv.NewConfig()
 		microProfile.SetupBroker(http.NewBroker())
 		microProfile.SetupRegistry(mdns.NewRegistry())
 		//	microProfile.SetupJWTRules()

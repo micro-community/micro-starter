@@ -111,7 +111,7 @@ func LoadConfigWithDefault(fn func(defaultConfig *Options) *Options) {
 	}
 	logger.Infof("DBType %+v", dbType)
 
-	redisHostValue, err := config.Get("Redis.Host")
+	redisHostValue, err := config.Get("RedisHost")
 	redisHost := redisHostValue.String("")
 
 	if err != nil && redisHost != "" {

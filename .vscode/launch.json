@@ -11,7 +11,9 @@
       "env": {
         //       "MICRO_STARTER_CONFIG_PATH": "./",
         "MICRO_STARTER_DEBUG_MODE": "true",
-        "DBType": "ddddddd",
+        "DBType": "dgraph",
+        "RedisHost": "redis://127.0.0.1:6379",
+        "PubTopics": "alarm,status,event",
       },
       "args": [
         "--profile=dev",

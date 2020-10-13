@@ -18,7 +18,7 @@ require (
 	github.com/olivere/elastic/v7 v7.0.20
 	github.com/sirupsen/logrus v1.7.0
 	github.com/urfave/cli/v2 v2.2.0
-	go.mongodb.org/mongo-driver v1.4.1
+	go.mongodb.org/mongo-driver v1.4.2
 	go.uber.org/dig v1.10.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201012173705-84dcc777aaee

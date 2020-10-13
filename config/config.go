@@ -118,17 +118,17 @@ func LoadConfigWithDefault(fn func(defaultConfig *Options) *Options) {
 		Default.Redis.Host = redisHost
 	}
 
-	pubtopicValue, err := config.Get("AsyncMessage.PubTopics")
+	pubtopicValue, err := config.Get("PubTopics")
 	pubtopic := pubtopicValue.StringSlice(nil)
 
-	if pubtopic != nil && len(pubtopic) > 0 {
+	if len(pubtopic) > 0 {
 		Default.Pubsub.PubTopics = pubtopic
 	}
 
-	subtopicValue, err := config.Get("AsyncMessage.SubTopics")
+	subtopicValue, err := config.Get("SubTopics")
 
 	subtopic := subtopicValue.StringSlice(nil)
-	if subtopic != nil && len(subtopic) > 0 {
+	if len(subtopic) > 0 {
 		Default.Pubsub.SubTopics = subtopic
 	}
 

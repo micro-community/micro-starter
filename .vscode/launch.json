@@ -17,9 +17,9 @@
         "SubTopics": "alarm,status,event",
       },
       "args": [
+        "--c=${workspaceFolder}/config.json",
         "--profile=dev",
         "--service_address=127.0.0.0.1:8080",
-        "--c=config.json"
       ]
     }
   ]

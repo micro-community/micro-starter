@@ -10,7 +10,7 @@ require (
 	github.com/dgraph-io/dgo/v200 v200.0.0-20200916081436-9ff368ad829a
 	github.com/envoyproxy/protoc-gen-validate v0.4.1
 	github.com/go-redis/redis/v8 v8.3.1
-	github.com/golang/protobuf v1.4.2
+	github.com/golang/protobuf v1.4.3
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
 	github.com/hashicorp/go-version v1.2.1
 	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014170732-9bd296d435bc

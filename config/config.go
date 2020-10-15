@@ -121,14 +121,14 @@ func LoadConfigWithDefault(fn func(defaultConfig *Options) *Options) {
 	pubtopicValue, err := config.Get("PubTopics")
 	pubtopic := pubtopicValue.StringSlice(nil)
 
-	if len(pubtopic) > 0 {
+	if err == nil && len(pubtopic) > 0 {
 		Default.Pubsub.PubTopics = pubtopic
 	}
 
 	subtopicValue, err := config.Get("SubTopics")
 
 	subtopic := subtopicValue.StringSlice(nil)
-	if len(subtopic) > 0 {
+	if err == nil && len(subtopic) > 0 {
 		Default.Pubsub.SubTopics = subtopic
 	}
 

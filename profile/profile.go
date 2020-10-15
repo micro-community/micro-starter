@@ -6,8 +6,9 @@ import (
 	"github.com/micro/micro/v3/service/broker/http"
 
 	"github.com/micro/micro/v3/service/config"
-	//	"github.com/micro/micro/v3/service/config/env"
-	mConfStore "github.com/micro/micro/v3/service/config/store"
+	"github.com/micro/micro/v3/service/config/env"
+
+	//	mConfStore "github.com/micro/micro/v3/service/config/store"
 
 	"github.com/micro/micro/v3/service/events"
 	"github.com/micro/micro/v3/service/events/stream/memory"
@@ -28,7 +29,7 @@ import (
 )
 
 func init() {
-	profile.Register("dev", Dev)
+	_ = profile.Register("dev", Dev)
 }
 
 // Dev profile to run develop env
@@ -39,8 +40,8 @@ var Dev = &profile.Profile{
 		runtime.DefaultRuntime = local.NewRuntime()
 		//store.DefaultStore = fstore.NewStore()
 		store.DefaultStore = mstore.NewStore()
-		//	config.DefaultConfig, _ = env.NewConfig()
-		config.DefaultConfig, _ = mConfStore.NewConfig(store.DefaultStore, "")
+		config.DefaultConfig, _ = env.NewConfig()
+		//	config.DefaultConfig, _ = mConfStore.NewConfig(store.DefaultStore, "")
 		profile.SetupBroker(http.NewBroker())
 		profile.SetupRegistry(mregistry.NewRegistry())
 		//	profile.SetupJWTRules()

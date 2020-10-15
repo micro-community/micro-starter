@@ -50,38 +50,17 @@ docker:
 
 # make protos
 
-.PHONY: rbac
-rbac:
+.PHONY: proto
+proto:
 	protoc \
 	-I "${GOROOT}/include" \
-	-I protos/rbac  \
+	-I "protos/${p}"  \
 	-I "${GOPATH}/src" \
-	--go_out="${GO_IMPORT}:protos/rbac"  \
-	--micro_out="${GO_IMPORT}:protos/rbac"   \
-	--validate_out="lang=go:protos/rbac"   \
-  rbac.proto
+	--go_out="${GO_IMPORT}:protos/${p}"  \
+	--micro_out="${GO_IMPORT}:protos/${p}"   \
+	--validate_out="lang=go:protos/${p}"   \
+  "${p}.proto"
 
-.PHONY: user
-user:
-	protoc \
-	-I "${GOROOT}/include" \
-	-I protos  \
-	-I "${GOPATH}/src" \
-	--go_out="${GO_IMPORT}:protos"  \
-	--micro_out="${GO_IMPORT}:protos"   \
-	--validate_out="lang=go:protos"   \
-  user.proto
-
-.PHONY: role
-role:
-	protoc \
-	-I "${GOROOT}/include" \
-	-I protos \
-	-I "${GOPATH}/src" \
-	--go_out="${GO_IMPORT}:protos"  \
-	--micro_out="${GO_IMPORT}:protos"   \
-	--validate_out="lang=go:protos"   \
-  role.proto
 
 .PHONY: message
 message:

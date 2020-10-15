@@ -13,8 +13,8 @@ import (
 
 	rbac "github.com/micro-community/auth/protos/rbac"
 	"github.com/micro-community/auth/service"
-	"github.com/micro/go-micro/v3/logger"
 	mService "github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/logger"
 )
 
 //RbacHandler implements the user proto interface,only for rbac

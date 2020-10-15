@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/micro/go-micro/v3/logger"
+	"github.com/micro/micro/v3/service/logger"
 )
 
 //Options for redis cache

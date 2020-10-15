@@ -7,7 +7,7 @@ import (
 
 	"github.com/dgraph-io/dgo/v200"
 	"github.com/dgraph-io/dgo/v200/protos/api"
-	"github.com/micro/go-micro/v3/logger"
+	"github.com/micro/micro/v3/service/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding/gzip"
 )

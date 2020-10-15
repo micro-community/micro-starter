@@ -12,9 +12,10 @@ require (
 	github.com/go-redis/redis/v8 v8.3.1
 	github.com/golang/protobuf v1.4.2
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
+	github.com/gosimple/slug v1.9.0 // indirect
 	github.com/hashicorp/go-version v1.2.1
 	github.com/micro/go-micro/v3 v3.0.0-beta.3.0.20201009122815-dad05be95ee0
-	github.com/micro/micro/v3 v3.0.0-beta.6
+	github.com/micro/micro/v3 v3.0.0-beta.6.0.20201014170732-9bd296d435bc
 	github.com/olivere/elastic/v7 v7.0.20
 	github.com/sirupsen/logrus v1.7.0
 	github.com/urfave/cli/v2 v2.2.0

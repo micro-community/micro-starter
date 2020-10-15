@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/micro-community/auth/config"
 	"github.com/micro-community/auth/pubsub"
-	"github.com/micro/go-micro/v3/logger"
+	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/cmd"
 	"github.com/micro/micro/v3/service"
 	"github.com/urfave/cli/v2"

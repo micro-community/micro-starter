@@ -7,7 +7,7 @@ import (
 
 	"github.com/micro-community/auth/db"
 	"github.com/micro-community/auth/models"
-	"github.com/micro/go-micro/v3/logger"
+	"github.com/micro/micro/v3/service/logger"
 )
 
 type RbacRepository struct {

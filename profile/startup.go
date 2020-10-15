@@ -15,8 +15,8 @@ import (
 	"github.com/micro-community/auth/repository/dgraph"
 	"github.com/micro-community/auth/repository/memory"
 	"github.com/micro-community/auth/service"
-	"github.com/micro/go-micro/v3/logger"
 	mservice "github.com/micro/micro/v3/service"
+	"github.com/micro/micro/v3/service/logger"
 	"go.uber.org/dig"
 )
 

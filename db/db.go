@@ -7,7 +7,7 @@ import (
 	"github.com/micro-community/auth/config"
 	"github.com/micro-community/auth/db/nosql"
 	"github.com/micro-community/auth/db/sql"
-	"github.com/micro/go-micro/v3/logger"
+	"github.com/micro/micro/v3/service/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )

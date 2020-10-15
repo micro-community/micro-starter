@@ -15,8 +15,8 @@ import (
 	"github.com/micro-community/auth/db/nosql"
 	"github.com/micro-community/auth/db/sql"
 	"github.com/micro-community/auth/pubsub"
-	"github.com/micro/go-micro/v3/logger"
 	"github.com/micro/micro/v3/service/config"
+	"github.com/micro/micro/v3/service/logger"
 )
 
 //Options of type

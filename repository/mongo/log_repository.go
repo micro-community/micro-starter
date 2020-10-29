@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

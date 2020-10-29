@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/models"
 	"gorm.io/gorm"
 )
 

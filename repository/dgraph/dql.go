@@ -3,7 +3,7 @@ package dgraph
 import (
 	"fmt"
 
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/models"
 )
 
 type Count struct {

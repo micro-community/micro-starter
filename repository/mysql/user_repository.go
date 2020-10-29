@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/models"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/micro-community/auth/db"
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/db"
+	"github.com/micro-community/micro-starter/models"
 	"github.com/micro/micro/v3/service/logger"
 )
 

@@ -1,6 +1,6 @@
 package repository
 
-import "github.com/micro-community/auth/models"
+import "github.com/micro-community/micro-starter/models"
 
 //IUser for user
 type IUser interface {

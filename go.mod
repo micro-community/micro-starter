@@ -1,4 +1,4 @@
-module github.com/micro-community/auth
+module github.com/micro-community/micro-starter
 
 go 1.15
 

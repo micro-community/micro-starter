@@ -9,12 +9,12 @@
 package profile
 
 import (
-	"github.com/micro-community/auth/config"
-	"github.com/micro-community/auth/db"
-	"github.com/micro-community/auth/handler"
-	"github.com/micro-community/auth/repository/dgraph"
-	"github.com/micro-community/auth/repository/memory"
-	"github.com/micro-community/auth/service"
+	"github.com/micro-community/micro-starter/config"
+	"github.com/micro-community/micro-starter/db"
+	"github.com/micro-community/micro-starter/handler"
+	"github.com/micro-community/micro-starter/repository/dgraph"
+	"github.com/micro-community/micro-starter/repository/memory"
+	"github.com/micro-community/micro-starter/service"
 	mservice "github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 	"go.uber.org/dig"

@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/models"
 	"github.com/micro/micro/v3/service/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

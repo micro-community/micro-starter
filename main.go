@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/micro-community/auth/config"
-	"github.com/micro-community/auth/pubsub"
+	"github.com/micro-community/micro-starter/config"
+	"github.com/micro-community/micro-starter/pubsub"
 	"github.com/micro/micro/v3/cmd"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/urfave/cli/v2"
 
 	//load profile
-	"github.com/micro-community/auth/profile"
+	"github.com/micro-community/micro-starter/profile"
 )
 
 func main() {

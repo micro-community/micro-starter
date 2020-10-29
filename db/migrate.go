@@ -9,7 +9,7 @@
 package db
 
 import (
-	"github.com/micro-community/auth/models"
+	"github.com/micro-community/micro-starter/models"
 )
 
 func migrate() {

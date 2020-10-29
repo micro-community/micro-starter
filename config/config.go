@@ -11,10 +11,10 @@ package config
 import (
 	"time"
 
-	"github.com/micro-community/auth/cache"
-	"github.com/micro-community/auth/db/nosql"
-	"github.com/micro-community/auth/db/sql"
-	"github.com/micro-community/auth/pubsub"
+	"github.com/micro-community/micro-starter/cache"
+	"github.com/micro-community/micro-starter/db/nosql"
+	"github.com/micro-community/micro-starter/db/sql"
+	"github.com/micro-community/micro-starter/pubsub"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
 )

@@ -12,7 +12,7 @@ builds:
     env:
       - CGO_ENABLED=0
       - GO111MODULE=on
-    ldflags: -s -w -X github.com/micro-community/auth/config.GitCommit={{ .ShortCommit }} -X github.com/micro-community/auth/config.GitTag={{ .Tag }} -X github.com/micro-community/auth/config.BuildDate={{ .Timestamp }}
+    ldflags: -s -w -X github.com/micro-community/micro-starter/config.GitCommit={{ .ShortCommit }} -X github.com/micro-community/micro-starter/config.GitTag={{ .Tag }} -X github.com/micro-community/micro-starter/config.BuildDate={{ .Timestamp }}
     goos:
       - linux
       - darwin

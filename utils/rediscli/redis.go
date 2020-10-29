@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/gomodule/redigo/redis"
-	"github.com/micro-community/auth/config"
-	"github.com/micro-community/auth/utils"
+	"github.com/micro-community/micro-starter/config"
+	"github.com/micro-community/micro-starter/utils"
 )
 
 var Redis *redis.Pool

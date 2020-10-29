@@ -3,8 +3,8 @@ package memory
 import (
 	"sync"
 
-	"github.com/micro-community/auth/models"
-	"github.com/micro-community/auth/repository"
+	"github.com/micro-community/micro-starter/models"
+	"github.com/micro-community/micro-starter/repository"
 )
 
 type userRepository struct {

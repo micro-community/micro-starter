@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 
-	user "github.com/micro-community/auth/protos"
-	"github.com/micro-community/auth/service"
+	user "github.com/micro-community/micro-starter/protos"
+	"github.com/micro-community/micro-starter/service"
 	mservice "github.com/micro/micro/v3/service"
 )
 

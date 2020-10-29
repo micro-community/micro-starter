@@ -3,10 +3,10 @@ package db
 import (
 	"sync"
 
-	"github.com/micro-community/auth/cache"
-	"github.com/micro-community/auth/config"
-	"github.com/micro-community/auth/db/nosql"
-	"github.com/micro-community/auth/db/sql"
+	"github.com/micro-community/micro-starter/cache"
+	"github.com/micro-community/micro-starter/config"
+	"github.com/micro-community/micro-starter/db/nosql"
+	"github.com/micro-community/micro-starter/db/sql"
 	"github.com/micro/micro/v3/service/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"

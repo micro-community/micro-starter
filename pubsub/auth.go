@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	event "github.com/micro-community/auth/protos/message"
+	event "github.com/micro-community/micro-starter/protos/message"
 	"github.com/micro/micro/v3/service"
 	log "github.com/micro/micro/v3/service/logger"
 )

@@ -1,7 +1,7 @@
 package resource
 
 import (
-	"github.com/micro-community/auth/service"
+	"github.com/micro-community/micro-starter/service"
 	mService "github.com/micro/micro/v3/service"
 	mservice "github.com/micro/micro/v3/service"
 )

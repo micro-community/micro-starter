@@ -12,7 +12,7 @@ import (
 	"context"
 
 	rbac "github.com/micro-community/micro-starter/protos/rbac"
-	"github.com/micro-community/micro-starter/service"
+
 	mService "github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 )

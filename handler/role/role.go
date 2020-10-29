@@ -4,7 +4,7 @@ import (
 	"context"
 
 	role "github.com/micro-community/micro-starter/protos"
-	"github.com/micro-community/micro-starter/service"
+
 	mservice "github.com/micro/micro/v3/service"
 )
 

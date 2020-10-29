@@ -11,6 +11,7 @@ import (
 )
 
 type RbacRepository struct {
+	Name string
 }
 
 func NewRBACRepository() *RbacRepository {

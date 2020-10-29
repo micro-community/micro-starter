@@ -11,10 +11,11 @@ package profile
 import (
 	"github.com/micro-community/micro-starter/config"
 	"github.com/micro-community/micro-starter/db"
-	"github.com/micro-community/micro-starter/handler"
+	"github.com/micro-community/micro-starter/handler/role"
+	"github.com/micro-community/micro-starter/handler/user"
+	"github.com/micro-community/micro-starter/handler/resource"
 	"github.com/micro-community/micro-starter/repository/dgraph"
 	"github.com/micro-community/micro-starter/repository/memory"
-	"github.com/micro-community/micro-starter/service"
 	mservice "github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 	"go.uber.org/dig"
@@ -50,13 +51,13 @@ func BuildingStartupService(srv *mservice.Service, conf *config.Options) {
 			logger.Warnf("no service got in DI Container")
 		}
 
-		srv.Handle(handler.NewRBAC(srv, sc.userService, sc.roleService, sc.resourceService))
+		srv.Handle(rbac.NewRBAC(srv, sc.userService, sc.roleService, sc.resourceService))
 		// handle user
-		srv.Handle(handler.NewUser(srv, sc.userService))
+		srv.Handle(user.NewUser(srv, sc.userService))
 		// handle role
-		srv.Handle(handler.NewRole(srv, sc.roleService))
+		srv.Handle(role.NewRole(srv, sc.roleService))
 		// handle resource
-		srv.Handle(handler.NewResource(srv, sc.resourceService))
+		srv.Handle(resource.NewResource(srv, sc.resourceService))
 
 	})
 

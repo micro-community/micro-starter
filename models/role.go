@@ -10,11 +10,3 @@ type Role struct {
 	Resources []Resource `json:"Resources,omitempty" gorm:"size:128;"`           // 角色拥有的资源
 	ModelExtension
 }
-
-// type Role struct {
-// 	Uid       string     `json:"uid,omitempty"`
-// 	Type      string     `json:"dgraph.type,omitempty"`
-// 	ID        string     `json:"role.id,omitempty"`
-// 	Name      string     `json:"role.name,omitempty"`
-// 	Resources []Resource `role:"resource,omitempty"`
-// }

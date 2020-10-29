@@ -6,7 +6,7 @@
  * @Description: Current file for graph database(dgraph) using
  */
 
-package handler
+package rbac
 
 import (
 	"context"

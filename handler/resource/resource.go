@@ -1,4 +1,4 @@
-package handler
+package resource
 
 import (
 	"github.com/micro-community/auth/service"

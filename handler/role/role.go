@@ -1,4 +1,4 @@
-package handler
+package role
 
 import (
 	"context"

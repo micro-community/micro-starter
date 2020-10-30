@@ -12,8 +12,10 @@ import (
 	"time"
 
 	"github.com/micro-community/micro-starter/cache"
-	"github.com/micro-community/micro-starter/db/nosql"
-	"github.com/micro-community/micro-starter/db/sql"
+	"github.com/micro-community/micro-starter/db/dgraph"
+	nosql "github.com/micro-community/micro-starter/db/mongo"
+	sql "github.com/micro-community/micro-starter/db/mysql"
+	"github.com/micro-community/micro-starter/db/sqlite"
 	"github.com/micro-community/micro-starter/pubsub"
 	"github.com/micro/micro/v3/service/config"
 	"github.com/micro/micro/v3/service/logger"
@@ -31,10 +33,10 @@ type Options struct {
 	ConnMaxLifetime time.Duration
 
 	Redis   cache.Options
-	MySQL   *sql.MySqlOptions
-	SQLite  *sql.SQLiteOptions
-	Mongodb *nosql.MongoOptions
-	Dgraph  *nosql.DgraphOptions
+	MySQL   *mysql.MySqlOptions
+	SQLite  *sqlite.SQLiteOptions
+	Mongodb *mongo.MongoOptions
+	Dgraph  *dgraph.DgraphOptions
 	Pubsub  *pubsub.Options
 
 	TenantKey string

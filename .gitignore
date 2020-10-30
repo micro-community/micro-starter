@@ -228,5 +228,4 @@ FakesAssemblies/
 *.orig
 /debug
 settings.json
-auth
 __debug_bin

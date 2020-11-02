@@ -5,8 +5,8 @@ import (
 
 	"github.com/micro-community/micro-starter/cache"
 	"github.com/micro-community/micro-starter/config"
-	nosql "github.com/micro-community/micro-starter/db/dgraph"
-	sql "github.com/micro-community/micro-starter/db/mysql"
+	 "github.com/micro-community/micro-starter/db/dgraph"
+	 "github.com/micro-community/micro-starter/db/mysql"
 	"github.com/micro/micro/v3/service/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"

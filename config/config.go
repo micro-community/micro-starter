@@ -13,8 +13,8 @@ import (
 
 	"github.com/micro-community/micro-starter/cache"
 	"github.com/micro-community/micro-starter/db/dgraph"
-	nosql "github.com/micro-community/micro-starter/db/mongo"
-	sql "github.com/micro-community/micro-starter/db/mysql"
+	"github.com/micro-community/micro-starter/db/mongo"
+	"github.com/micro-community/micro-starter/db/mysql"
 	"github.com/micro-community/micro-starter/db/sqlite"
 	"github.com/micro-community/micro-starter/pubsub"
 	"github.com/micro/micro/v3/service/config"

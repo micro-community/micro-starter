@@ -1,4 +1,4 @@
-package sql
+package sqlite
 
 import (
 	_ "gorm.io/driver/mysql"

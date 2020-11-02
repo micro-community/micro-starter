@@ -1,4 +1,4 @@
-package nosql
+package dgraph
 
 import (
 	"encoding/json"

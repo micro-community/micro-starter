@@ -13,6 +13,7 @@ import (
 	"github.com/micro-community/micro-starter/db"
 	"github.com/micro-community/micro-starter/handler/role"
 	"github.com/micro-community/micro-starter/handler/user"
+	"github.com/micro-community/micro-starter/handler/rbac"
 	"github.com/micro-community/micro-starter/handler/resource"
 	"github.com/micro-community/micro-starter/repository/dgraph"
 	"github.com/micro-community/micro-starter/repository/memory"

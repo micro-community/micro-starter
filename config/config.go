@@ -59,21 +59,21 @@ var Default = &Options{
 		MaxIdle:        1,
 		MaxIdleTimeout: 1,
 	},
-	SQLite: &sql.SQLiteOptions{
+	SQLite: &sqlite.SQLiteOptions{
 		User:     "",
 		Password: "",
 		Host:     "localhost",
 		DBName:   "",
 		Path:     "",
 	},
-	Mongodb: &nosql.MongoOptions{
+	Mongodb: &mongo.MongoOptions{
 		User:     "",
 		Password: "",
 		Host:     "localhost",
 		Port:     27017,
 		DBName:   "auth",
 	},
-	Dgraph: &nosql.DgraphOptions{
+	Dgraph: &dgraph.DgraphOptions{
 		User:     "",
 		Password: "",
 		Host:     "localhost",

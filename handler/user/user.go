@@ -3,31 +3,29 @@ package user
 import (
 	"context"
 
-	user "github.com/micro-community/micro-starter/protos"
-
-	mservice "github.com/micro/micro/v3/service"
+	pb "github.com/micro-community/micro-starter/protos"
+	"github.com/micro-community/micro-starter/repository"
+	"github.com/micro/micro/v3/service"
 )
 
 //UserHandler implements the user proto interface,User : people、tenant(orgs、company)
 type UserHandler struct {
-	mService *mservice.Service
-	Name     string
-	srv      *service.UserService // instance of the user service
+	Name    string
+	user    repository.IUser // instance of the user service
 }
 
 // New returns an initUser handler
-func NewUser(mservice *mservice.Service, userService *service.UserService) *UserHandler {
+func NewUser(service *service.Service, user repository.IUser) *UserHandler {
 	return &UserHandler{
-		mService: mservice,
-		Name:     "UserHandler",
-		srv:      userService,
+		Name:    service.Name(),
+		user:    user,
 	}
 }
 
 //GetUser return User By ID
-func (u *UserHandler) GetUser(ctx context.Context, req *user.GetUserRequest, resp *user.UserInfo) error {
+func (u *UserHandler) GetUser(ctx context.Context, req *pb.GetUserRequest, resp *pb.UserInfo) error {
 	//	var user models.User
-	// user.ID = req.UserId
+	// pb.ID = req.UserId
 
 	// _, err := u.srv.Login()
 	// if err != nil {
@@ -38,10 +36,10 @@ func (u *UserHandler) GetUser(ctx context.Context, req *user.GetUserRequest, res
 	return nil
 }
 
-func (u *UserHandler) InsertUser(ctx context.Context, req *user.InsertUserRequest, resp *user.InsertUserResponse) error {
+func (u *UserHandler) InsertUser(ctx context.Context, req *pb.InsertUserRequest, resp *pb.InsertUserResponse) error {
 	//	var user models.User
 
-	// id, err := user.Insert()
+	// id, err := pb.Insert()
 	// if err != nil {
 	// 	logger.Error(err)
 	// 	return err
@@ -52,12 +50,12 @@ func (u *UserHandler) InsertUser(ctx context.Context, req *user.InsertUserReques
 	return nil
 }
 
-func (u *UserHandler) DeleteUser(ctx context.Context, req *user.DeleteUserRequest, resp *user.DeleteUserResponse) error {
+func (u *UserHandler) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest, resp *pb.DeleteUserResponse) error {
 	panic("implement me")
 
 }
 
-func (u *UserHandler) UpdateUser(ctx context.Context, req *user.UpdateUserRequest, resp *user.UserInfo) error {
+func (u *UserHandler) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest, resp *pb.UserInfo) error {
 	//	var data models.User
 
 	// result, err := data.Update(req.UserId)

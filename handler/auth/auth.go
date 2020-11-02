@@ -1,25 +1,26 @@
 package auth
 
 import (
-	mService "github.com/micro/micro/v3/service"
+	"github.com/micro-community/micro-starter/repository"
+	"github.com/micro/micro/v3/service"
 )
 
 //AuthHandler implements the user proto interface
 type AuthHandler struct {
 	Name        string
-	UserSrv     *service.UserService     // instance of the user service
-	RoleSrv     *service.RoleService     // instance of the role service
-	ResourceSrv *service.ResourceService // instance of the resource service
+	User     repository.IUser     // instance of the user model
+	Role     repository.IRole     // instance of the role model
+	Resource repository.IResource // instance of the resource model
 }
 
-func NewAuth(service *mService.Service,
-	user *service.UserService,
-	role *service.RoleService,
-	resource *service.ResourceService) *AuthHandler {
+func NewAuth(service *service.Service,
+	user repository.IUser,
+	role repository.IRole,
+	resource repository.IResource) *AuthHandler {
 	return &AuthHandler{
 		Name:        service.Name(),
-		UserSrv:     user,
-		RoleSrv:     role,
-		ResourceSrv: resource,
+		User:     user,
+		Role:     role,
+		Resource: resource,
 	}
 }

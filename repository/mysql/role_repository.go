@@ -9,12 +9,19 @@ import (
 	"gorm.io/gorm"
 )
 
-//UserModel data
+//RoleRepository data
 type RoleRepository struct {
 	mu        *sync.Mutex
 	db        *gorm.DB
 	tableName string
 }
+
+
+func NewRoleRepository() {
+
+	
+}
+
 
 func (r RoleRepository) TableName() string {
 	if r.tableName == "" {

@@ -11,29 +11,34 @@ package profile
 import (
 	"github.com/micro-community/micro-starter/config"
 	"github.com/micro-community/micro-starter/db"
-	"github.com/micro-community/micro-starter/handler/role"
-	"github.com/micro-community/micro-starter/handler/user"
 	"github.com/micro-community/micro-starter/handler/rbac"
 	"github.com/micro-community/micro-starter/handler/resource"
+	"github.com/micro-community/micro-starter/handler/role"
+	"github.com/micro-community/micro-starter/handler/user"
+	"github.com/micro-community/micro-starter/repository"
 	"github.com/micro-community/micro-starter/repository/dgraph"
 	"github.com/micro-community/micro-starter/repository/memory"
-	mservice "github.com/micro/micro/v3/service"
+
+	"github.com/micro-community/micro-starter/repository/mongo"
+	//	"github.com/micro-community/micro-starter/repository/mysql"
+	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 	"go.uber.org/dig"
 )
 
-//serviceCollection for DI ,all DI　All Service Instance will be created Here
-type serviceCollection struct {
+//modelService for DI ,all DI　All Service Instance will be created Here
+type modelService struct {
 	dig.In
-	roleService     *service.RoleService
-	userService     *service.UserService
-	resourceService *service.ResourceService
+	role     repository.IRole
+	user     repository.IUser
+	resource repository.IResource
+	logs     *mongo.LogRepository
 
 	// .... 其他的service
 }
 
 //BuildingStartupService build all service relationship
-func BuildingStartupService(srv *mservice.Service, conf *config.Options) {
+func BuildingStartupService(srv *service.Service, conf *config.Options) {
 
 	c := dig.New()
 
@@ -44,21 +49,21 @@ func BuildingStartupService(srv *mservice.Service, conf *config.Options) {
 	c.Provide(service.NewUser)
 	c.Provide(service.NewRole)
 	c.Provide(service.NewResource)
-
+   c.Provide(mongo.NewLogRepo)
 	// begin to handle service object instance
-	c.Invoke(func(sc *serviceCollection) {
+	c.Invoke(func(sc *modelService) {
 
 		if sc == nil {
 			logger.Warnf("no service got in DI Container")
 		}
 
-		srv.Handle(rbac.NewRBAC(srv, sc.userService, sc.roleService, sc.resourceService))
+		srv.Handle(rbac.NewRBAC(srv, sc.user, sc.role, sc.resource))
 		// handle user
-		srv.Handle(user.NewUser(srv, sc.userService))
+		srv.Handle(user.NewUser(srv, sc.user))
 		// handle role
-		srv.Handle(role.NewRole(srv, sc.roleService))
+		srv.Handle(role.NewRole(srv, sc.role))
 		// handle resource
-		srv.Handle(resource.NewResource(srv, sc.resourceService))
+		srv.Handle(resource.NewResource(srv, sc.resource))
 
 	})
 

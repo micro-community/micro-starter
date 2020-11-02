@@ -5,8 +5,8 @@ import (
 
 	"github.com/micro-community/micro-starter/cache"
 	"github.com/micro-community/micro-starter/config"
-	 "github.com/micro-community/micro-starter/db/dgraph"
-	 "github.com/micro-community/micro-starter/db/mysql"
+	"github.com/micro-community/micro-starter/db/dgraph"
+	"github.com/micro-community/micro-starter/db/sqlite"
 	"github.com/micro/micro/v3/service/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
@@ -14,8 +14,8 @@ import (
 
 var (
 	cacheCli      *cache.Client
-	db            *gorm.DB      // for mysql/sqlite
-	dg            *nosql.DormDB //for dgraph
+	db            *gorm.DB       // for mysql/sqlite
+	dg            *dgraph.DormDB //for dgraph
 	mdb           *mongo.Database
 	once          sync.Once
 	dbContextType string
@@ -46,27 +46,37 @@ func BuildDBContext(dbCase string) {
 
 }
 
-func DDB() *nosql.DormDB {
+func DDB(tableName string) *mongo.Database {
+
+	if mdb != nil {
+		return mdb
+	}
+
+
+	return mdb
+
+}
+
+
+//MDB for mongodb nosql
+func MDB() *dgraph.DormDB {
 
 	if dg != nil {
 		return dg
 	}
 
-	dg = nosql.NewDGraphClient(config.Default.Dgraph)
-	once.Do(func() {
-		migrate()
-	})
-
 	return dg
 
 }
 
+
+//DB for mysql/sqlite/pg
 func DB() *gorm.DB {
 
 	if db != nil {
 		return db
 	}
-	db = sql.NewSQLite(config.Default.SQLite)
+	db = sqlite.NewSQLite(config.Default.SQLite)
 	once.Do(func() {
 		migrate()
 	})

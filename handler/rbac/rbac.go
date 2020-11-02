@@ -12,29 +12,28 @@ import (
 	"context"
 
 	rbac "github.com/micro-community/micro-starter/protos/rbac"
-
-	mService "github.com/micro/micro/v3/service"
+	"github.com/micro-community/micro-starter/repository"
+	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
 )
 
 //RbacHandler implements the user proto interface,only for rbac
 
 type RbacHandler struct {
-	Name        string
-	UserSrv     *service.UserService     // instance of the user service
-	RoleSrv     *service.RoleService     // instance of the role service
-	ResourceSrv *service.ResourceService // instance of the resource service
+	Name     string
+	User     repository.IUser     // instance of the user model
+	Role     repository.IRole     // instance of the role model
+	Resource repository.IResource // instance of the resource model
 }
 
-func NewRBAC(service *mService.Service,
-	user *service.UserService,
-	role *service.RoleService,
-	resource *service.ResourceService) *RbacHandler {
+func NewRBAC(service *service.Service, user repository.IUser,
+	role repository.IRole,
+	resource repository.IResource) *RbacHandler {
 	return &RbacHandler{
-		Name:        service.Name(),
-		UserSrv:     user,
-		RoleSrv:     role,
-		ResourceSrv: resource,
+		Name:     service.Name(),
+		User:     user,
+		Role:     role,
+		Resource: resource,
 	}
 }
 

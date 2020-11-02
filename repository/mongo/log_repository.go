@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 	"sync"
-
+	"github.com/micro-community/micro-starter/db"
 	"github.com/micro-community/micro-starter/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,6 +12,15 @@ import (
 type LogRepository struct {
 	db *mongo.Collection
 	mu *sync.Mutex
+}
+
+func NewLogRepo() *LogRepository {
+
+	return &LogRepository{
+				db : db.DDB(),
+				mu: &sync.Mutex{},
+	}
+
 }
 
 func (l *LogRepository) Create(ctx context.Context, event models.Log) (interface{}, error) {

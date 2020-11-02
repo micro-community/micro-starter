@@ -30,7 +30,7 @@ func NewRoleRepository() *RoleRepository {
 	}
 }
 
-func (r *RoleRepository) findTarget(roleID int) (int, *models.Role) {
+func (r *RoleRepository) FindById(roleID int) (int, *models.Role) {
 
 	for index, role := range r.roles {
 		if role.ID == roleID {

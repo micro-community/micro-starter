@@ -46,29 +46,32 @@ func BuildDBContext(dbCase string) {
 
 }
 
-func DDB(tableName string) *mongo.Database {
-
-	if mdb != nil {
-		return mdb
-	}
-
-
-	return mdb
-
-}
-
-
-//MDB for mongodb nosql
-func MDB() *dgraph.DormDB {
+func DDB() *dgraph.DormDB {
 
 	if dg != nil {
 		return dg
 	}
 
+	dg = dgraph.NewDGraphClient(config.Default.Dgraph)
+	once.Do(func() {
+		migrate()
+	})
+
 	return dg
 
 }
 
+//MDB for mongodb nosql
+func MDB() *mongo.Database {
+
+	if mdb != nil {
+		return mdb
+	}
+	//create mong link to connect mongo
+
+	return mdb
+
+}
 
 //DB for mysql/sqlite/pg
 func DB() *gorm.DB {

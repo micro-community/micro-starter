@@ -14,10 +14,10 @@ type LogRepository struct {
 	mu *sync.Mutex
 }
 
-func NewLogRepo() *LogRepository {
+func NewLogRepository() *LogRepository {
 
 	return &LogRepository{
-				db : db.DDB(),
+				db : db.MDB().Collection("log"),
 				mu: &sync.Mutex{},
 	}
 

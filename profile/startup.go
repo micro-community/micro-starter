@@ -18,7 +18,7 @@ import (
 	"github.com/micro-community/micro-starter/repository"
 	"github.com/micro-community/micro-starter/repository/dgraph"
 	"github.com/micro-community/micro-starter/repository/memory"
-
+  "github.com/micro-community/micro-starter/repository/mysql"
 	"github.com/micro-community/micro-starter/repository/mongo"
 	//	"github.com/micro-community/micro-starter/repository/mysql"
 	"github.com/micro/micro/v3/service"
@@ -29,9 +29,9 @@ import (
 //modelService for DI ,all DI　All Service Instance will be created Here
 type modelService struct {
 	dig.In
-	role     repository.IRole
+	rbac     *dgraph.RbacRepository
+	role     *mysql.RoleRepository
 	user     repository.IUser
-	resource repository.IResource
 	logs     *mongo.LogRepository
 
 	// .... 其他的service
@@ -46,10 +46,11 @@ func BuildingStartupService(srv *service.Service, conf *config.Options) {
 	buildDataContext(c, conf)
 
 	//service : aggregate repository service and logic proc to provide service ability for handler
-	c.Provide(service.NewUser)
-	c.Provide(service.NewRole)
-	c.Provide(service.NewResource)
-   c.Provide(mongo.NewLogRepo)
+
+	c.Provide(dgraph.NewRBACRepository)
+	c.Provide(memory.NewUserRepository)
+	c.Provide(mysql.NewRoleRepository)
+	c.Provide(mongo.NewLogRepository)
 	// begin to handle service object instance
 	c.Invoke(func(sc *modelService) {
 

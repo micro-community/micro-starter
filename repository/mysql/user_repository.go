@@ -16,6 +16,12 @@ type UserRepository struct {
 	tableName string
 }
 
+func NewUserRepository() *UserRepository {
+
+	return &UserRepository{}
+
+}
+
 func (u UserRepository) TableName() string {
 	if u.tableName == "" {
 		u.tableName = "user"

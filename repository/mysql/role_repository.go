@@ -16,12 +16,11 @@ type RoleRepository struct {
 	tableName string
 }
 
+func NewRoleRepository() *RoleRepository {
 
-func NewRoleRepository() {
+	return &RoleRepository{}
 
-	
 }
-
 
 func (r RoleRepository) TableName() string {
 	if r.tableName == "" {

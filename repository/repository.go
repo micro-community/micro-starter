@@ -11,7 +11,7 @@ type IUser interface {
 }
 
 type IRole interface {
-	FindById(id int64) (*models.Role, error)
+	//	FindById(id int64) (*models.Role, error)
 	FindByName(name string) (*models.Role, error)
 	Add(user *models.Role) error
 	List(page, size int) ([]*models.Role, error)

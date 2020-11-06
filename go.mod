@@ -14,7 +14,7 @@ require (
 	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
 	github.com/hashicorp/go-version v1.2.1
 	github.com/lib/pq v1.8.0
-	github.com/micro/micro/v3 v3.0.0-beta.7
+	github.com/micro/micro/v3 v3.0.1-0.20201106123606-1fc5978f576e
 	github.com/olivere/elastic/v7 v7.0.21
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.7.0

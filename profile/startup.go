@@ -18,8 +18,9 @@ import (
 	"github.com/micro-community/micro-starter/repository"
 	"github.com/micro-community/micro-starter/repository/dgraph"
 	"github.com/micro-community/micro-starter/repository/memory"
-  "github.com/micro-community/micro-starter/repository/mysql"
 	"github.com/micro-community/micro-starter/repository/mongo"
+	"github.com/micro-community/micro-starter/repository/mysql"
+
 	//	"github.com/micro-community/micro-starter/repository/mysql"
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
@@ -29,10 +30,10 @@ import (
 //modelService for DI ,all DI　All Service Instance will be created Here
 type modelService struct {
 	dig.In
-	rbac     *dgraph.RbacRepository
-	role     *mysql.RoleRepository
-	user     repository.IUser
-	logs     *mongo.LogRepository
+	rbac *dgraph.RbacRepository
+	role *mysql.RoleRepository
+	user repository.IUser
+	logs *mongo.LogRepository
 
 	// .... 其他的service
 }

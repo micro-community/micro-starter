@@ -30,6 +30,15 @@ func NewRoleRepository() *RoleRepository {
 	}
 }
 
+func (r *RoleRepository) findTarget(id int64) (*models.Role, error) {
+	for index, role := range r.roles {
+		if int64(role.ID) == id {
+			return r.roles[index], nil
+		}
+	}
+	return nil, errors.New("no found")
+}
+
 func (r *RoleRepository) FindById(roleID int) (int, *models.Role) {
 
 	for index, role := range r.roles {

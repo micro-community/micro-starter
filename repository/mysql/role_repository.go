@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"errors"
-	"sync"
 	"time"
 
 	"github.com/micro-community/micro-starter/models"
@@ -11,8 +10,8 @@ import (
 
 //RoleRepository data
 type RoleRepository struct {
-	mu        *sync.Mutex
-	db        *gorm.DB
+	//	mu        *sync.Mutex
+	//	db        *gorm.DB
 	tableName string
 }
 
@@ -20,6 +19,16 @@ func NewRoleRepository() *RoleRepository {
 
 	return &RoleRepository{}
 
+}
+
+func FindById(id int64) (*models.Role, error) {
+
+	return nil, nil
+}
+
+func (r RoleRepository) Add(user *models.Role) error {
+
+	return nil
 }
 
 func (r RoleRepository) TableName() string {

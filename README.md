@@ -8,8 +8,8 @@ micro(v3) 微服务能力集框架,有兴趣的朋友，热烈欢迎 PR.
 
 ```bash
 go get google.golang.org/protobuf
-go get github.com/golang/protobuf/protoc-gen-go
-go get github.com/micro-community/micro/v3/cmd/protoc-gen-micro
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install github.com/micro-community/micro/v3/cmd/protoc-gen-micro@latest
 ```
 
 ### generate protos

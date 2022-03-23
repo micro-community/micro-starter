@@ -7,7 +7,7 @@ micro(v3) 微服务能力集框架,有兴趣的朋友，热烈欢迎 PR.
 ## install
 
 ```bash
-go get -u github.com/golang/protobuf/proto
+go get -u google.golang.org/protobuf
 go get -u github.com/golang/protobuf/protoc-gen-go
 go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 ```
